@@ -1,6 +1,5 @@
 package Model;
 import java.util.ArrayList;
-import java.util.List;
 
 public class WordExtractor {
 	private ArrayList<Document> documents;
@@ -12,7 +11,18 @@ public class WordExtractor {
 	}
 	public ArrayList<Document> elemenateStoppingWords() {
 		ArrayList<Document> docs = new ArrayList<Document>();
-		
+		for(int i = 0; i < documents.size(); i++) {
+			Document temp = new Document();
+			temp.setDocumentName(documents.get(i).getDocumentName());
+			for(int j = 0; j < stoppingWords.size(); j++) {
+				for(int k = 0; k < documents.get(i).getWords().size(); k++) {
+					if(stoppingWords.get(j).equalsIgnoreCase(documents.get(i).getWords().get(k))) {
+						documents.get(i).getWords().remove(k);
+					}
+				}
+			}
+			docs.add(temp);
+		}
 		return docs;
 	}
 	public void addDocument(Document doc) {
@@ -26,25 +36,22 @@ public class WordExtractor {
 			System.out.println(doc);
 		}
 	}
-	
-	public static void main(String [] args) {
+	public static void simpleEleminateStopWordsTest() {
 		WordExtractor x = new WordExtractor(new ArrayList<Document>(),new ArrayList<String>());
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
 		ArrayList<String> words = new ArrayList<String>();
+		words.add("the");
 		words.add("ahmed");
 		words.add("alaa");
+		words.add("a");
 		doc.setWords(words);
 		ArrayList<String> stop = new ArrayList<String>();
-		stop.add("alaa");
-		stop.add("ahmed");
+		stop.add("a");
+		stop.add("the");
 		x.addStoppingWords(stop);
 		x.addDocument(doc);
-		ArrayList<Document> y = x.elemenateStoppingWords();
-		for(int i = 0; i < y.size(); i++) {
-			System.out.println(y.get(i));
-		}
-		System.out.println("end of code");
-		//x.printDocument();
+		x.elemenateStoppingWords();
+		x.printDocument();
 	}
 }
