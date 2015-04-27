@@ -11,12 +11,16 @@ public class WordExtractor {
 	public WordExtractor() {
 		documents = new ArrayList<Document>();
 		stoppingWords = new ArrayList<String>();
+		addStoppingWords(new File("stop-words"));
 	}
 	public WordExtractor(ArrayList<Document> doc, ArrayList<String> stopping) {
 		documents = (ArrayList<Document>) doc;
 		stoppingWords = (ArrayList<String>) stopping;
 	}
-	public ArrayList<Document> elemenateStoppingWords() {
+	public void setDocuments (ArrayList<Document> docs) {
+		documents = docs;
+	}
+	public void elemenateStoppingWords() {
 		ArrayList<Document> docs = new ArrayList<Document>();
 		for(int i = 0; i < documents.size(); i++) {
 			Document temp = new Document();
@@ -28,9 +32,16 @@ public class WordExtractor {
 					}
 				}
 			}
-			docs.add(temp);
 		}
-		return docs;
+	}
+	public void eleminateShortWords() {
+		for(int i = 0; i < documents.size(); i++) {
+			for(int j = 0; j < documents.get(i).getWords().size(); j++) {
+				if(documents.get(i).getWords().get(j).length() < 3) {
+					documents.get(i).getWords().remove(j);
+				}
+			}
+		}
 	}
 	public void addDocument(Document doc) {
 		documents.add(doc);
@@ -82,21 +93,22 @@ public class WordExtractor {
 			System.out.println(word);
 		}
 	}
+	
 	public static void simpleEleminateStopWordsTest() {
 		WordExtractor x = new WordExtractor(new ArrayList<Document>(),new ArrayList<String>());
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
 		ArrayList<String> words = new ArrayList<String>();
-		words.add("the");
-		words.add("ahmed");
-		words.add("alaa");
-		words.add("a");
+		words.add("compute");
+		words.add("computer");
+		words.add("computing");
+		words.add("computed");
 		doc.setWords(words);
+		x.addDocument(doc);
 		ArrayList<String> stop = new ArrayList<String>();
 		stop.add("a");
 		stop.add("the");
 		x.addStoppingWords(stop);
-		x.addDocument(doc);
 		x.elemenateStoppingWords();
 		x.printDocument();
 	}
@@ -107,5 +119,9 @@ public class WordExtractor {
 			x.addStoppingWords(file);
 		}
 		x.printStoppingWords();
+	}
+	
+	public static void main(String[] args) {
+		simpleEleminateStopWordsTest();
 	}
 }
