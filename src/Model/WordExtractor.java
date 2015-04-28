@@ -1,7 +1,9 @@
 package Model;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class WordExtractor {
@@ -93,6 +95,29 @@ public class WordExtractor {
 			System.out.println(word);
 		}
 	}
+	public void preprocess() { // before call this function it is a must to put the documents in the documents array list also the stopping words
+		eleminateShortWords();
+		elemenateStoppingWords();
+		HashMap<String,File> filesToStem = getFiles();
+		HashMap<String,File> filesAfterStemming = Stemmer.getStemedFiles(filesToStem);
+	}
+	private HashMap<String, File> getFiles() {
+		HashMap<String,File> filesToStem = new HashMap<String,File>();
+		for(int i = 0; i < documents.size(); i++) {
+			File file = new File("/doc-after-stopping-words/"+documents.get(i).getDocumentName());
+			try {
+				PrintWriter writer = new PrintWriter(file);
+				for(int j = 0; j < documents.get(i).getWords().size(); j++) {
+					writer.println(documents.get(i).getWords().get(j));
+				}
+				writer.close();
+			} catch (FileNotFoundException e) {
+			
+			}
+			filesToStem.put(documents.get(i).getDocumentName(), file);
+		}
+		return filesToStem;
+	}
 	
 	public static void simpleEleminateStopWordsTest() {
 		WordExtractor x = new WordExtractor(new ArrayList<Document>(),new ArrayList<String>());
@@ -119,9 +144,5 @@ public class WordExtractor {
 			x.addStoppingWords(file);
 		}
 		x.printStoppingWords();
-	}
-	
-	public static void main(String[] args) {
-		simpleEleminateStopWordsTest();
 	}
 }
