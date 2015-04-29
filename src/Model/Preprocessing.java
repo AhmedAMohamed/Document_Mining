@@ -181,6 +181,15 @@ public class Preprocessing {
 		words.add("computed");
 		doc.setWords(words);
 		sample.addDocument(doc);
+		Document doc1 = new Document();
+		doc1.setDocumentName("doc 2");
+		ArrayList<String> words1 = new ArrayList<String>();
+		words1.add("compute");
+		words1.add("computer");
+		words1.add("computing");
+		words1.add("computed");
+		doc1.setWords(words1);
+		sample.addDocument(doc1);
 		ArrayList<String> stop = new ArrayList<String>();
 		stop.add("a");
 		stop.add("compute");
