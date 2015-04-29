@@ -171,7 +171,7 @@ public class Preprocessing {
 		x.printStoppingWords();
 	}
 	public static void main(String []args) {
-		Preprocessing x = new Preprocessing(new ArrayList<Document>(),new ArrayList<String>());
+		Preprocessing sample = new Preprocessing(new ArrayList<Document>(),new ArrayList<String>());
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
 		ArrayList<String> words = new ArrayList<String>();
@@ -180,12 +180,12 @@ public class Preprocessing {
 		words.add("computing");
 		words.add("computed");
 		doc.setWords(words);
-		x.addDocument(doc);
+		sample.addDocument(doc);
 		ArrayList<String> stop = new ArrayList<String>();
 		stop.add("a");
 		stop.add("compute");
-		x.addStoppingWords(stop);
-		ArrayList<Document> y = x.preprocess();
+		sample.addStoppingWords(stop);
+		ArrayList<Document> y = sample.preprocess();
 		for(Document t : y) {
 			System.out.println(t);
 		}
