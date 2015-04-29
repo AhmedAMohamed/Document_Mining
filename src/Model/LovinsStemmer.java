@@ -884,35 +884,6 @@ public class LovinsStemmer {
     }
     return result.toString();  
   }
-
-  /**
-   * Stems text coming into stdin and writes it to stdout.
-   */
-  public static void main(String[] ops) {
-
-    LovinsStemmer ls = new LovinsStemmer();
-
-    try {
-      int num;
-      StringBuffer wordBuffer = new StringBuffer();
-      while ((num = System.in.read()) != -1) {
-	char c = (char)num;
-	if (((num >= (int)'A') && (num <= (int)'Z')) ||
-	    ((num >= (int)'a') && (num <= (int)'z'))) {
-	  wordBuffer.append(c);
-	} else {
-	  if (wordBuffer.length() > 0) {
-	    System.out.print(ls.stem(wordBuffer.toString().
-				     toLowerCase()));
-	    wordBuffer = new StringBuffer();
-	  }
-	  System.out.print(c);
-	}
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 }
     
 
