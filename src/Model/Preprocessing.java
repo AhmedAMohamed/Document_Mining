@@ -17,7 +17,6 @@ public class Preprocessing {
 	private ArrayList<String> stoppingWords;
 
 	public Preprocessing() {
-		System.out.println("hhh");
 		documents = new ArrayList<Document>();
 		stoppingWords = new ArrayList<String>();
 		ArrayList<File> files = getFiles("stop-words");
@@ -79,11 +78,9 @@ public class Preprocessing {
 	public boolean addStoppingWords(File stopFile) {
 		if (stopFile.canRead()) {
 			try {
-				System.out.println("try");
 				Scanner scan = new Scanner(stopFile);
 				while (scan.hasNext()) {
 					String line = scan.nextLine();
-					System.out.println(line);
 					String[] words = line.split(" ");
 					for (String word : words) {
 						stoppingWords.add(word);
@@ -209,12 +206,7 @@ public class Preprocessing {
 		return freqentItems;
 	}
 	public static void main(String []args) {
-<<<<<<< HEAD
 		Preprocessing x = new Preprocessing();
-		
-=======
-		Preprocessing sample = new Preprocessing(new ArrayList<Document>(),new ArrayList<String>());
->>>>>>> dae0df999857c2a26561526e98d84bff90c126eb
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
 		ArrayList<String> words = new ArrayList<String>();
@@ -223,26 +215,8 @@ public class Preprocessing {
 		words.add("computing");
 		words.add("computed");
 		doc.setWords(words);
-<<<<<<< HEAD
 		x.addDocument(doc);
 		ArrayList<Document> y = x.preprocess();
-=======
-		sample.addDocument(doc);
-		Document doc1 = new Document();
-		doc1.setDocumentName("doc 2");
-		ArrayList<String> words1 = new ArrayList<String>();
-		words1.add("compute");
-		words1.add("computer");
-		words1.add("computing");
-		words1.add("computed");
-		doc1.setWords(words1);
-		sample.addDocument(doc1);
-		ArrayList<String> stop = new ArrayList<String>();
-		stop.add("a");
-		stop.add("compute");
-		sample.addStoppingWords(stop);
-		ArrayList<Document> y = sample.preprocess();
->>>>>>> dae0df999857c2a26561526e98d84bff90c126eb
 		for(Document t : y) {
 			System.out.println(t);
 		}
