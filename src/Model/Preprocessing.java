@@ -5,12 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
-
-import javax.print.Doc;
 
 public class Preprocessing {
 	private ArrayList<Document> documents;
