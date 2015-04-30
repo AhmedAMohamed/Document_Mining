@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import javax.print.Doc;
@@ -14,13 +17,18 @@ public class Preprocessing {
 	private ArrayList<String> stoppingWords;
 
 	public Preprocessing() {
+		System.out.println("hhh");
 		documents = new ArrayList<Document>();
 		stoppingWords = new ArrayList<String>();
-		addStoppingWords(new File("stop-words"));
+		ArrayList<File> files = getFiles("stop-words");
+		for(File file : files) {
+			addStoppingWords(file);
+		}
 	}
 	public Preprocessing(ArrayList<Document> doc, ArrayList<String> stopping) {
 		documents = (ArrayList<Document>) doc;
 		stoppingWords = (ArrayList<String>) stopping;
+		
 	}
 	public void setDocuments(ArrayList<Document> docs) {
 		documents = docs;
@@ -71,9 +79,11 @@ public class Preprocessing {
 	public boolean addStoppingWords(File stopFile) {
 		if (stopFile.canRead()) {
 			try {
+				System.out.println("try");
 				Scanner scan = new Scanner(stopFile);
 				while (scan.hasNext()) {
 					String line = scan.nextLine();
+					System.out.println(line);
 					String[] words = line.split(" ");
 					for (String word : words) {
 						stoppingWords.add(word);
@@ -170,47 +180,46 @@ public class Preprocessing {
 		}
 		x.printStoppingWords();
 	}
-	public static HashMap<String, HashMap<String,Integer>> getFrequentItems(int freqentCut, ArrayList<Document> docs) {
-		HashMap<String,HashMap<String,Integer>> freqentItems = new HashMap<String, HashMap<String,Integer>>();
-		for(Document doc : docs) {
-			HashMap<String, Integer> wordFreq = new HashMap<>();
-			for(String word : doc.getWords()) {
-				if(wordFreq.containsKey(word)) {
-					wordFreq.put(word, wordFreq.get(word)+1);
+	public static HashMap<String, HashMap<String,Integer>> getFrequentItems(ArrayList<Document> docs) {
+		synchronized (docs) {
+			HashMap<String,HashMap<String,Integer>> freqentItems = new HashMap<String, HashMap<String,Integer>>();
+			for(Document doc : docs) {
+				HashMap<String, Integer> wordFreq = new HashMap<>();
+				for(String word : doc.getWords()) {
+					if(wordFreq.containsKey(word)) {
+						wordFreq.put(word, wordFreq.get(word)+1);
+					}
+					else {
+						wordFreq.put(word, 1);
+					}
 				}
-				else {
-					wordFreq.put(word, 1);
-				}
+				freqentItems.put(doc.getDocumentName(), wordFreq);
 			}
-			freqentItems.put(doc.getDocumentName(), wordFreq);
+			return freqentItems;
 		}
-		for(String docName : freqentItems.keySet()) {
-			for(String key : freqentItems.get(docName).keySet()) {
-				if(freqentItems.get(docName).get(key) <= freqentCut) {
+	}
+	public static HashMap<String, HashMap<String,Integer>> getFrequentItemsFirstCut(int frequentCut, HashMap<String,HashMap<String,Integer>> freqentItems) {
+		for(Entry<String, HashMap<String, Integer>> entry : freqentItems.entrySet()) {
+			for (Map.Entry<String, Integer> it : entry.getValue().entrySet()) {
+				if(it.getValue() <= frequentCut) {
 					
-				}
-				else {
-					freqentItems.get(docName).remove(key);
 				}
 			}
 		}
 		return freqentItems;
 	}
 	public static void main(String []args) {
-		Preprocessing x = new Preprocessing(new ArrayList<Document>(),new ArrayList<String>());
+		Preprocessing x = new Preprocessing();
+		
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
 		ArrayList<String> words = new ArrayList<String>();
-		words.add("compute");
+		words.add("the");
 		words.add("computer");
 		words.add("computing");
 		words.add("computed");
 		doc.setWords(words);
 		x.addDocument(doc);
-		ArrayList<String> stop = new ArrayList<String>();
-		stop.add("a");
-		stop.add("compute");
-		x.addStoppingWords(stop);
 		ArrayList<Document> y = x.preprocess();
 		for(Document t : y) {
 			System.out.println(t);
