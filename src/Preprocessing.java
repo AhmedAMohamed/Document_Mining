@@ -1,75 +1,80 @@
-package Model;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Scanner;
+import java.util.*;
+
 
 public class Preprocessing {
 	private ArrayList<Document> documents;
-	private ArrayList<String> stoppingWords;
+	private HashSet<String> stoppingWords;
 
 	public Preprocessing() {
-		documents = new ArrayList<Document>();
-		stoppingWords = new ArrayList<String>();
-		ArrayList<File> files = getFiles("stop-words");
-		for(File file : files) {
-			addStoppingWords(file);
-		}
+		documents = new ArrayList<>();
+		stoppingWords = new HashSet<>();
+		addStoppingWords(new File("stop-words/stop-words_english_1_en.txt"));
+		addStoppingWords(new File("stop-words/stop-words_english_2_en.txt"));
+		addStoppingWords(new File("stop-words/stop-words_english_3_en.txt"));
+		addStoppingWords(new File("stop-words/stop-words_english_4_en.txt"));
+		addStoppingWords(new File("stop-words/stop-words_english_5_en.txt"));
+		addStoppingWords(new File("stop-words/stop-words_english_6_en.txt"));
 	}
-	public Preprocessing(ArrayList<Document> doc, ArrayList<String> stopping) {
-		documents = (ArrayList<Document>) doc;
-		stoppingWords = (ArrayList<String>) stopping;
-		
+	public Preprocessing(ArrayList<Document> doc, HashSet<String> stopping) {
+		documents = doc;
+		stoppingWords =  stopping;
 	}
 	public void setDocuments(ArrayList<Document> docs) {
 		documents = docs;
 	}
 	public void elemenateStoppingWords() {
-		ArrayList<Document> docs = new ArrayList<Document>();
 		for (int i = 0; i < documents.size(); i++) {
-			Document temp = new Document();
-			temp.setDocumentName(documents.get(i).getDocumentName());
-			for (int j = 0; j < stoppingWords.size(); j++) {
-				for (int k = 0; k < documents.get(i).getWords().size(); k++) {
-					if (stoppingWords.get(j).equalsIgnoreCase(
-							documents.get(i).getWords().get(k))) {
-						documents.get(i).getWords().remove(k);
-					}
-				}
-			}
+            LinkedList<String> words = documents.get(i).getWords();
+            ListIterator<String> wordIterator = words.listIterator();
+            while (wordIterator.hasNext()) {
+                String word = wordIterator.next();
+                if(stoppingWords.contains(word))
+                {
+                    wordIterator.remove();
+                }
+
+            }
 		}
 	}
 	public void eleminateShortWords() {
 		for (int i = 0; i < documents.size(); i++) {
-			for (int j = 0; j < documents.get(i).getWords().size(); j++) {
-				if (documents.get(i).getWords().get(j).length() < 3) {
-					documents.get(i).getWords().remove(j);
-				}
-			}
+            LinkedList<String> words = documents.get(i).getWords();
+            ListIterator<String> wordIterator = words.listIterator();
+            while (wordIterator.hasNext()) {
+                String word = wordIterator.next();
+                if(word.length()< 3)
+                {
+                    wordIterator.remove();
+                }
+
+            }
+
 		}
 	}
 	public ArrayList<Document> stemWithLovin(ArrayList<Document> docs) {
-		ArrayList<Document> stemmedDocs = new ArrayList<Document>();
+		ArrayList<Document> stemmedDocs = new ArrayList<>();
 		IteratedLovinsStemmer ls = new IteratedLovinsStemmer();
 		for (int count = 0; count < docs.size(); count++) {
 			Document doc = new Document();
 			doc.setDocumentName(docs.get(count).getDocumentName());
-			for (int i = 0; i < docs.get(count).getWords().size(); i++) {
-				doc.getWords().add(ls.stem(docs.get(count).getWords().get(i)));
-			}
-			stemmedDocs.add(doc);
+
+            LinkedList<String> words = documents.get(count).getWords();
+            for(String word : words){
+                doc.getWords().add(ls.stem(word));
+
+            }
+
+            stemmedDocs.add(doc);
 		}
 		return stemmedDocs;
 	}
 	public void addDocument(Document doc) {
 		documents.add(doc);
 	}
-	public void addStoppingWords(ArrayList<String> words) {
+	public void addStoppingWords(HashSet<String> words) {
 		stoppingWords = words;
 	}
 	public boolean addStoppingWords(File stopFile) {
@@ -86,6 +91,8 @@ public class Preprocessing {
 				scan.close();
 				return true;
 			} catch (FileNotFoundException e) {
+                System.out.println("Cannot include stopwords file.");
+
 				return false;
 			}
 		} else {
@@ -147,17 +154,17 @@ public class Preprocessing {
 	}
 	public static void simpleEleminateStopWordsTest() {
 		Preprocessing x = new Preprocessing(new ArrayList<Document>(),
-				new ArrayList<String>());
+				new HashSet<String>());
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
-		ArrayList<String> words = new ArrayList<String>();
+        LinkedList<String> words = new LinkedList<>();
 		words.add("compute");
 		words.add("computer");
 		words.add("computing");
 		words.add("computed");
 		doc.setWords(words);
 		x.addDocument(doc);
-		ArrayList<String> stop = new ArrayList<String>();
+        HashSet<String> stop = new HashSet<String>();
 		stop.add("a");
 		stop.add("the");
 		x.addStoppingWords(stop);
@@ -167,53 +174,38 @@ public class Preprocessing {
 	public static void simpleExtractStoppingWordsFromFilesTest(
 			String directoryName) {
 		Preprocessing x = new Preprocessing(new ArrayList<Document>(),
-				new ArrayList<String>());
+				new HashSet<String>());
 		ArrayList<File> files = getFiles(directoryName);
 		for (File file : files) {
 			x.addStoppingWords(file);
 		}
 		x.printStoppingWords();
 	}
-	public static HashMap<String, HashMap<String,Integer>> getFrequentItems(ArrayList<Document> docs) {
-		synchronized (docs) {
-			HashMap<String,HashMap<String,Integer>> freqentItems = new HashMap<String, HashMap<String,Integer>>();
-			for(Document doc : docs) {
-				HashMap<String, Integer> wordFreq = new HashMap<>();
-				for(String word : doc.getWords()) {
-					if(wordFreq.containsKey(word)) {
-						wordFreq.put(word, wordFreq.get(word)+1);
-					}
-					else {
-						wordFreq.put(word, 1);
-					}
-				}
-				freqentItems.put(doc.getDocumentName(), wordFreq);
-			}
-			return freqentItems;
-		}
-	}
-	public static HashMap<String, HashMap<String,Integer>> getFrequentItemsFirstCut(int frequentCut, HashMap<String,HashMap<String,Integer>> freqentItems) {
-		for(Entry<String, HashMap<String, Integer>> entry : freqentItems.entrySet()) {
-			for (Map.Entry<String, Integer> it : entry.getValue().entrySet()) {
-				if(it.getValue() <= frequentCut) {
-					
-				}
-			}
-		}
-		return freqentItems;
-	}
 	public static void main(String []args) {
-		Preprocessing x = new Preprocessing();
+		Preprocessing sample = new Preprocessing(new ArrayList<Document>(),new HashSet<String>());
 		Document doc = new Document();
 		doc.setDocumentName("doc 1");
-		ArrayList<String> words = new ArrayList<String>();
-		words.add("the");
+        LinkedList<String> words = new LinkedList<>();
+		words.add("compute");
 		words.add("computer");
 		words.add("computing");
 		words.add("computed");
 		doc.setWords(words);
-		x.addDocument(doc);
-		ArrayList<Document> y = x.preprocess();
+		sample.addDocument(doc);
+		Document doc1 = new Document();
+		doc1.setDocumentName("doc 2");
+        LinkedList<String> words1 = new LinkedList<>();
+		words1.add("compute");
+		words1.add("computer");
+		words1.add("computing");
+		words1.add("computed");
+		doc1.setWords(words1);
+		sample.addDocument(doc1);
+		HashSet<String> stop = new HashSet<String>();
+		stop.add("a");
+		stop.add("compute");
+		sample.addStoppingWords(stop);
+		ArrayList<Document> y = sample.preprocess();
 		for(Document t : y) {
 			System.out.println(t);
 		}

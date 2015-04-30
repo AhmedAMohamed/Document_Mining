@@ -1,4 +1,3 @@
-package Model;
 /**
  * @author AhmedA
  * This Class is used from this link

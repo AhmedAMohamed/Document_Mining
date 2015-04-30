@@ -1,14 +1,13 @@
-package Model;
-
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Document {
 	private String documentName;
-	private ArrayList<String> words;
+	private LinkedList<String> words;
 	
 	public Document() {
 		documentName = new String();
-		words = new ArrayList<String>();
+		words = new LinkedList<>();
 	}
 	public String getDocumentName() {
 		return documentName;
@@ -16,10 +15,10 @@ public class Document {
 	public void setDocumentName(String documentName) {
 		this.documentName = documentName;
 	}
-	public ArrayList<String> getWords() {
+	public LinkedList<String> getWords() {
 		return words;
 	}
-	public void setWords(ArrayList<String> words) {
+	public void setWords(LinkedList<String> words) {
 		this.words = words;
 	}
 	@Override

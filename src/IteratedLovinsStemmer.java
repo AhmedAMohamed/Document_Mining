@@ -1,7 +1,3 @@
-package Model;
-
-import java.util.*;
-
 /*
  *    IteratedLovinsStemmer.java
  *    Copyright (C) 2001 Eibe Frank
