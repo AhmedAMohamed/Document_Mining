@@ -170,6 +170,32 @@ public class Preprocessing {
 		}
 		x.printStoppingWords();
 	}
+	public static HashMap<String, HashMap<String,Integer>> getFrequentItems(int freqentCut, ArrayList<Document> docs) {
+		HashMap<String,HashMap<String,Integer>> freqentItems = new HashMap<String, HashMap<String,Integer>>();
+		for(Document doc : docs) {
+			HashMap<String, Integer> wordFreq = new HashMap<>();
+			for(String word : doc.getWords()) {
+				if(wordFreq.containsKey(word)) {
+					wordFreq.put(word, wordFreq.get(word)+1);
+				}
+				else {
+					wordFreq.put(word, 1);
+				}
+			}
+			freqentItems.put(doc.getDocumentName(), wordFreq);
+		}
+		for(String docName : freqentItems.keySet()) {
+			for(String key : freqentItems.get(docName).keySet()) {
+				if(freqentItems.get(docName).get(key) <= freqentCut) {
+					
+				}
+				else {
+					freqentItems.get(docName).remove(key);
+				}
+			}
+		}
+		return freqentItems;
+	}
 	public static void main(String []args) {
 		Preprocessing x = new Preprocessing(new ArrayList<Document>(),new ArrayList<String>());
 		Document doc = new Document();
