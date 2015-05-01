@@ -60,13 +60,11 @@ public class Preprocessing {
 		for (int count = 0; count < docs.size(); count++) {
 			Document doc = new Document();
 			doc.setDocumentName(docs.get(count).getDocumentName());
-
             LinkedList<String> words = documents.get(count).getWords();
             for(String word : words){
                 doc.getWords().add(ls.stem(word));
 
             }
-
             stemmedDocs.add(doc);
 		}
 		return stemmedDocs;

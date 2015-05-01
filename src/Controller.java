@@ -15,10 +15,7 @@ public class Controller {
     {
         model.setOutputDirectory(dir);
     }
-
     public void startPreprocessing(){
         model.preprocessData();
     }
-
-
 }
