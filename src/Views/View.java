@@ -1,5 +1,9 @@
+package Views;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import Controllers.Controller;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,4 +1,6 @@
+package Model.StemmingAlgorithms;
 /**
+
  * @author AhmedA
  * This Class is used from this link
  * http://www.tartarus.org/~martin/PorterStemmer

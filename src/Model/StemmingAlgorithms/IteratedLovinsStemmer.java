@@ -1,3 +1,4 @@
+package Model.StemmingAlgorithms;
 /*
  *    IteratedLovinsStemmer.java
  *    Copyright (C) 2001 Eibe Frank

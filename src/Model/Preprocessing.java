@@ -1,7 +1,11 @@
+package Model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
+
+import Model.DataContainer.Document;
+import Model.StemmingAlgorithms.IteratedLovinsStemmer;
 
 
 public class Preprocessing {

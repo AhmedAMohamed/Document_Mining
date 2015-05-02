@@ -1,6 +1,9 @@
+package Model;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
+
+import Model.DataContainer.Document;
 
 /**
  * Created by karim on 4/30/15.

@@ -1,4 +1,7 @@
+package Controllers;
 import java.io.File;
+
+import Model.Model;
 
 public class Controller {
     private Model model;
