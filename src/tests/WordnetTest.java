@@ -4,7 +4,9 @@ package tests;
 import edu.mit.jwi.*;
 import edu.mit.jwi.data.ILoadPolicy;
 import edu.mit.jwi.item.*;
-
+import edu.mit.jwi.morph.IStemmer;
+import edu.mit.jwi.morph.SimpleStemmer;
+import edu.mit.jwi.morph.WordnetStemmer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,8 +17,10 @@ import java.util.List;
 public class WordnetTest {
     public static void main(String[] args) throws  Exception{
         IDictionary dic = getDic(new File(System.getProperty("user.dir")+"/wordnet/dict"));
-
-
+        List<String> t = stemWordNet("generoucity", dic);
+        for(String r : t) {
+        	System.out.println(r);
+        }
     }
     public static IDictionary getDic ( File wnDir ) throws Exception {
         IRAMDictionary dict = new RAMDictionary ( wnDir , ILoadPolicy. NO_LOAD ) ;
@@ -24,6 +28,12 @@ public class WordnetTest {
         return dict;
     }
 
+    public static List<String> stemWordNet (String word, IDictionary dict) {
+    	WordnetStemmer stemmer = new WordnetStemmer(dict);
+    	List<String> stemed = stemmer.findStems(word, null);
+    	return stemed;
+    }
+    
     public static ArrayList<String> getHypernyms ( IDictionary dict ) {
         // get the synset
         IIndexWord idxWord = dict . getIndexWord ( " sale " , POS . NOUN ) ;
