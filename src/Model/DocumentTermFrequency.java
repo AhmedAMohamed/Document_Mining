@@ -1,29 +1,44 @@
 package Model;
 import java.util.HashMap;
 
-/**
- * Created by karim on 4/30/15.
- */
 public class DocumentTermFrequency {
     private String name;
     private HashMap<String, Integer> termFreq;
+    private int maxTermFrequency;
 
     public DocumentTermFrequency(String name)
     {
         this.name = name == null ? "":name;
         this.termFreq = new HashMap<>();
+        this.maxTermFrequency = 0;
+    }
+
+    public int getMaxTermFrequency(){
+        return maxTermFrequency;
     }
 
     public void addTerm(String word){
+        addTerm(word, 1);
+    }
+
+    public void addTerm(String word, int freq){
         Integer stored = termFreq.get(word);
         if(stored != null)
         {
-            termFreq.put(word, stored.intValue() + 1);
+            termFreq.put(word, stored.intValue() + freq);
+            if(stored+freq > maxTermFrequency)
+                maxTermFrequency = stored + freq;
         }
         else
         {
-            termFreq.put(word, 1);
+            termFreq.put(word, freq);
+            if(freq > maxTermFrequency)
+                maxTermFrequency =  freq;
         }
+    }
+    public int removeTerm(String word)
+    {
+        return termFreq.remove(word);
     }
 
     public String getName(){
@@ -33,6 +48,12 @@ public class DocumentTermFrequency {
     {
         Integer stored = termFreq.get(word);
         return stored == null ? -1: stored.intValue();
+    }
+
+    public int getWordFreqUnified(String word)
+    {
+        Integer stored = termFreq.get(word);
+        return stored == null ? 0: stored.intValue();
     }
 
     public void setEmptyWord(String word)

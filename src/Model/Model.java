@@ -1,34 +1,36 @@
 package Model;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import Model.DataContainer.Document;
+import edu.mit.jwi.item.Word;
 
-/**
- * Created by karim on 4/30/15.
- */
+
 public class Model {
-	private File[] selectedFiles;
-	private String outputDirectory;
-	private ArrayList<String> globalWords;
-	private int longestDocumentNameLen;
+	private static File[] selectedFiles = null;
+	private static String outputDirectory = null;
+	private static int longestDocumentNameLen = 0;
+    private static Wordnet wordnet = null;
+    private static ArrayList<DocumentTermFrequency> modelDocs = null;
+    private static ArrayList<String> unifiedWordsVector = null;
 
-	public Model() {
-		this.selectedFiles = null;
-		outputDirectory = null;
-		longestDocumentNameLen = 0;
+
+	public static  void setSelectedFile(File[] _selectedFiles) {
+		selectedFiles = _selectedFiles;
 	}
 
-	public void setSelectedFile(File[] selectedFiles) {
-		this.selectedFiles = selectedFiles;
+	public static void setOutputDirectory(String _outputDirectory) {
+		outputDirectory = _outputDirectory;
 	}
+    public static Wordnet getWordnet(){
+        if(wordnet == null)
+        {
+            wordnet = new Wordnet(false);
+        }
+        return wordnet;
+    }
 
-	public void setOutputDirectory(String outputDirectory) {
-		this.outputDirectory = outputDirectory;
-	}
-
-	private ArrayList<Document> extractDocumentWords() {
+	private static ArrayList<Document> extractDocumentWords() {
 		ArrayList<Document> documents = new ArrayList<>();
 		for (File file : selectedFiles) {
 			Document d = new Document();
@@ -53,103 +55,133 @@ public class Model {
 		return documents;
 	}
 
-	public void preprocessData() {
+	public static void preprocessData() {
+        //get documents from file
 		ArrayList<Document> documents = extractDocumentWords();
 		Preprocessing pre = new Preprocessing();
 		pre.setDocuments(documents);
-		documents = pre.preprocess();
-		ArrayList<DocumentTermFrequency> docsWithFreq = createUnifiedTermFrequency(documents);
-		writeOutput(globalWords, docsWithFreq);
+
+        //Do phase 1 : stopping words, stemmer
+		documents = pre.preprocessPhase1();
+
+        //empty used data
+        pre.unsetWords();
+
+        //get documents with term frequencies and detailed global words
+        ArrayList<WordInfo> unifiedWordsInfoVector = null;
+		createUnifiedTermFrequency(documents, unifiedWordsInfoVector);
+
+        //start phase 2
+        unifiedWordsVector = pre.preprocessPhase2(modelDocs, unifiedWordsInfoVector);
+
+        //write output
+		writeOutput(unifiedWordsVector);
 	}
 
-	private void writeOutput(ArrayList<String> globalWords,
-			ArrayList<DocumentTermFrequency> docsWithFreq) {
-		try {
-			PrintWriter writer = new PrintWriter(outputDirectory
-					+ "/preprocess_output.txt", "UTF-8");
-			// first line words
-			// first output empty for document name
-			writer.print(left("", getMaxDocumentNameLen()));
-			// then write each word
-			for (int i = 0; i < globalWords.size(); i++) {
-				writer.print(center(globalWords.get(i), getColLenght(i)));
 
-			}
-			writer.println();
-			writer.println();
+	private static void createUnifiedTermFrequency(ArrayList<Document> documents,
+                                                           ArrayList<WordInfo> unifiedWordsInfoVector) {
+        class Value{
+            public HashSet<DocumentTermFrequency> set;
+            public int freq;
+            public Value()
+            {
+                set = new HashSet<>();
+                freq = 0;
+            }
+        }
+		HashMap<String, Value> globalWordToDouments = new HashMap<>();
 
-			// start writing each document vecotr
-			for (DocumentTermFrequency doc : docsWithFreq) {
-				// first output document name
-				writer.print(left(doc.getName(), getMaxDocumentNameLen()));
-				for (int i = 0; i < globalWords.size(); i++) {
-					writer.print(center(
-							String.valueOf(doc.getWordFreq(globalWords.get(i))),
-							getColLenght(i)));
-
-				}
-				writer.println();
-			}
-
-			writer.close();
-		} catch (IOException t) {
-			System.out.println("Couldn't produce output file.");
-		}
-	}
-
-	private ArrayList<DocumentTermFrequency> createUnifiedTermFrequency(
-			ArrayList<Document> documents) {
-		HashMap<String, HashSet<DocumentTermFrequency>> globalWordToDouments = new HashMap<>();
-		ArrayList<DocumentTermFrequency> docsFreq = new ArrayList<>();
+        //loop over each document
 		for (Document d : documents) {
+            //track longest document name [for visualization purposes]
 			updateLongestDocumentNameLen(d.getDocumentName());
-			DocumentTermFrequency dtf = new DocumentTermFrequency(
-					d.getDocumentName());
+            //create a new document ter frequency
+			DocumentTermFrequency dtf = new DocumentTermFrequency(d.getDocumentName());
+
+            //loop over document words to add them to the new dtf
 			LinkedList<String> words = d.getWords();
 			for (String word : words) {
+                //add word to new dtf
 				dtf.addTerm(word);
-				if (globalWordToDouments.containsKey(word)) {
-					globalWordToDouments.get(word).add(dtf);
-				} else {
-					HashSet<DocumentTermFrequency> docs = new HashSet<>();
-					docs.add(dtf);
-					globalWordToDouments.put(word, docs);
 
-				}
+                Value globalValue = globalWordToDouments.get(word);
+                // if global word doesnt exist create it
+                if(globalValue == null)
+                {
+                    globalValue = new Value();
+                    globalWordToDouments.put(word, globalValue);
+                }
+                //add document to the word
+                globalValue.set.add(dtf);
+                //add frequency
+                globalValue.freq += 1;
+
+
 			}
-			docsFreq.add(dtf);
+			modelDocs.add(dtf);
 		}
-		unifyVectoreSpace(docsFreq, globalWordToDouments);
-		return docsFreq;
+        //now create the unified vector with detailed info
+        for(String word : globalWordToDouments.keySet())
+        {
+            Value v = globalWordToDouments.get(word);
+            unifiedWordsInfoVector.add(new WordInfo(word, v.set.size(), v.freq));
+
+        }
+
 	}
 
-	private void unifyVectoreSpace(ArrayList<DocumentTermFrequency> docsFreq,
-			HashMap<String, HashSet<DocumentTermFrequency>> globalWordToDouments) {
-		globalWords = new ArrayList<>(globalWordToDouments.keySet());
+    private static void writeOutput(ArrayList<String> globalWords) {
+        try {
+            PrintWriter writer = new PrintWriter(outputDirectory
+                    + "/preprocess_output.txt", "UTF-8");
+            // first line words
+            // first output empty for document name
+            writer.print(left("", getMaxDocumentNameLen()));
+            // then write each word
+            for (int i = 0; i < globalWords.size(); i++) {
+                writer.print(center(globalWords.get(i), getColLenght(i)));
 
-		for (String word : globalWords) {
-			for (DocumentTermFrequency d : docsFreq) {
-				if (!globalWordToDouments.get(word).contains(d))
-					d.setEmptyWord(word);
-			}
-		}
-	}
+            }
+            writer.println();
+            writer.println();
 
-	private void updateLongestDocumentNameLen(String name) {
+            // start writing each document vecotr
+            for (DocumentTermFrequency doc : modelDocs) {
+                // first output document name
+                writer.print(left(doc.getName(), getMaxDocumentNameLen()));
+                for (int i = 0; i < globalWords.size(); i++) {
+                    writer.print(center(
+                            String.valueOf(doc.getWordFreq(globalWords.get(i))),
+                            getColLenght(i)));
+
+                }
+                writer.println();
+            }
+
+            writer.close();
+        } catch (IOException t) {
+            System.out.println("Couldn't produce output file.");
+        }
+    }
+
+
+
+    private static void updateLongestDocumentNameLen(String name) {
 		if (name.length() > longestDocumentNameLen)
 			longestDocumentNameLen = name.length();
 
 	}
 
-	private int getColLenght(int index) {
-		return Math.max(globalWords.get(index).length(), 10) + 2;
+	private static int getColLenght(int index) {
+		return Math.max(unifiedWordsVector.get(index).length(), 10) + 2;
 	}
 
-	private int getMaxDocumentNameLen() {
+	private static int getMaxDocumentNameLen() {
 		return longestDocumentNameLen + 2;
 	}
 
-	private static String center(String text, int len) {
+	private  static String center(String text, int len) {
 		String out = String
 				.format("%" + len + "s%s%" + len + "s", "", text, "");
 		float mid = (out.length() / 2);

@@ -14,28 +14,34 @@ import java.util.List;
 public class Wordnet {
 
     IDictionary dict;
-    public Wordnet(boolean openInMemory) throws IOException, InterruptedException {
-        IRAMDictionary dict = new RAMDictionary(
-                                    new File(System.getProperty("user.dir")+"/wordnet/dict"),
-                                    ILoadPolicy. NO_LOAD ) ;
-        dict.open();
-        if(openInMemory)
-        {
-           dict.load(true);
+    public Wordnet(boolean openInMemory) {
+        try {
+            IRAMDictionary dict = new RAMDictionary(
+                    new File(System.getProperty("user.dir")+"/wordnet/dict"),
+                    ILoadPolicy. NO_LOAD ) ;
+            dict.open();
+            if(openInMemory)
+            {
+                dict.load(true);
+            }
+            this.dict = dict;
         }
-        this.dict = dict;
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
 
 
     }
 
-    public  ArrayList<String> getHypernyms () {
+    public  ArrayList<String> getHypernyms (String _word) {
         // get the synset
-        IIndexWord idxWord = dict .getIndexWord( " sale " , POS. NOUN ) ;
-        IWordID wordID = idxWord . getWordIDs () . get (0) ; // 1 st meaning
+        IIndexWord idxWord = dict .getIndexWord(_word , POS. NOUN ) ;
+        IWordID wordID = idxWord . getWordIDs () . get(0) ; // 1 st meaning
         IWord word = dict . getWord ( wordID ) ;
         ISynset synset = word . getSynset () ;
         // get the hypernyms
-
         List<ISynsetID> hypernyms =
                 synset .getRelatedSynsets(Pointer.HYPERNYM) ;
         ArrayList<String> hypers = new ArrayList<>(5);
