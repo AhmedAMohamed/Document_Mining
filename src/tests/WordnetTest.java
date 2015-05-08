@@ -16,10 +16,6 @@ import java.util.List;
 public class WordnetTest {
     public static void main(String[] args) throws  Exception{
         IDictionary dic = getDic(new File(System.getProperty("user.dir")+"/wordnet/dict"));
-        List<String> t = stemWordNet("generoucity", dic);
-        for(String r : t) {
-        	System.out.println(r);
-        }
     }
     public static IDictionary getDic ( File wnDir ) throws Exception {
         IRAMDictionary dict = new RAMDictionary ( wnDir , ILoadPolicy. NO_LOAD ) ;
@@ -33,25 +29,12 @@ public class WordnetTest {
     	return stemed;
     }
     
-    public static ArrayList<String> getHypernyms ( IDictionary dict ) {
+    public static void getHypernyms(IDictionary dict) {
         // get the synset
-        IIndexWord idxWord = dict . getIndexWord ( " sale " , POS . NOUN ) ;
+        IIndexWord idxWord = dict . getIndexWord ( "bakes" ,POS.NOUN) ;
         IWordID wordID = idxWord . getWordIDs () . get (0) ; // 1 st meaning
-        IWord word = dict . getWord ( wordID ) ;
-        ISynset synset = word . getSynset () ;
-        // get the hypernyms
-
-        List<ISynsetID> hypernyms =
-                synset .getRelatedSynsets(Pointer.HYPERNYM) ;
-        ArrayList<String> hypers = new ArrayList<>(5);
-        while(!hypernyms.isEmpty() && hypers.size() < 5)
-        {
-            // print out each h y p e r n y m s id and synonyms
-            ISynset s = dict.getSynset(hypernyms.get(0));
-            hypers.add(s.getWords().get(0).getLemma());
-            hypernyms = s.getRelatedSynsets(Pointer.HYPERNYM);
-        }
-        return hypers;
+        IWord word = dict . getWord ( wordID );
+        System.out.println(word.getLemma());
     }
 
 }

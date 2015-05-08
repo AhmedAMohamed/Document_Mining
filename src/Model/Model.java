@@ -42,7 +42,11 @@ public class Model {
 						new FileInputStream(file)));
 				String line = null;
 				while ((line = br.readLine()) != null) {
-					words.addAll(Arrays.asList(line.split("\\s+")));
+                    List<String> extracted = Arrays.asList(line.split("\\s+"));
+                    for(String w: extracted)
+                    {
+                        words.add(w.replaceAll("[^A-Za-z]+", ""));
+                    }
 				}
 				d.setWords(words);
 				documents.add(d);
@@ -68,7 +72,7 @@ public class Model {
         pre.unsetWords();
 
         //get documents with term frequencies and detailed global words
-        ArrayList<WordInfo> unifiedWordsInfoVector = null;
+        HashMap<String, WordInfo> unifiedWordsInfoVector = new HashMap<>();
 		createUnifiedTermFrequency(documents, unifiedWordsInfoVector);
 
         //start phase 2
@@ -80,18 +84,9 @@ public class Model {
 
 
 	private static void createUnifiedTermFrequency(ArrayList<Document> documents,
-                                                           ArrayList<WordInfo> unifiedWordsInfoVector) {
-        class Value{
-            public HashSet<DocumentTermFrequency> set;
-            public int freq;
-            public Value()
-            {
-                set = new HashSet<>();
-                freq = 0;
-            }
-        }
-		HashMap<String, Value> globalWordToDouments = new HashMap<>();
+                                                   HashMap<String, WordInfo> unifiedWordsInfoVector) {
 
+        modelDocs = new ArrayList<>(documents.size());
         //loop over each document
 		for (Document d : documents) {
             //track longest document name [for visualization purposes]
@@ -105,15 +100,15 @@ public class Model {
                 //add word to new dtf
 				dtf.addTerm(word);
 
-                Value globalValue = globalWordToDouments.get(word);
+                WordInfo globalValue = unifiedWordsInfoVector.get(word);
                 // if global word doesnt exist create it
                 if(globalValue == null)
                 {
-                    globalValue = new Value();
-                    globalWordToDouments.put(word, globalValue);
+                    globalValue = new WordInfo();
+                    unifiedWordsInfoVector.put(word, globalValue);
                 }
                 //add document to the word
-                globalValue.set.add(dtf);
+                globalValue.docs.add(dtf);
                 //add frequency
                 globalValue.freq += 1;
 
@@ -121,13 +116,7 @@ public class Model {
 			}
 			modelDocs.add(dtf);
 		}
-        //now create the unified vector with detailed info
-        for(String word : globalWordToDouments.keySet())
-        {
-            Value v = globalWordToDouments.get(word);
-            unifiedWordsInfoVector.add(new WordInfo(word, v.set.size(), v.freq));
 
-        }
 
 	}
 
@@ -152,7 +141,7 @@ public class Model {
                 writer.print(left(doc.getName(), getMaxDocumentNameLen()));
                 for (int i = 0; i < globalWords.size(); i++) {
                     writer.print(center(
-                            String.valueOf(doc.getWordFreq(globalWords.get(i))),
+                            String.valueOf(doc.getWordFreqUnified(globalWords.get(i))),
                             getColLenght(i)));
 
                 }

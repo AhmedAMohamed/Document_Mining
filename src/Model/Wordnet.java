@@ -38,6 +38,10 @@ public class Wordnet {
     public  ArrayList<String> getHypernyms (String _word) {
         // get the synset
         IIndexWord idxWord = dict .getIndexWord(_word , POS. NOUN ) ;
+        if(idxWord == null)
+        {
+            return new ArrayList<>();
+        }
         IWordID wordID = idxWord . getWordIDs () . get(0) ; // 1 st meaning
         IWord word = dict . getWord ( wordID ) ;
         ISynset synset = word . getSynset () ;
@@ -52,5 +56,10 @@ public class Wordnet {
             hypernyms = s.getRelatedSynsets(Pointer.HYPERNYM);
         }
         return hypers;
+    }
+
+    public boolean inNoun(String _word){
+        return dict.getIndexWord(_word, POS.NOUN) != null;
+
     }
 }

@@ -63,19 +63,19 @@ public class Preprocessing {
 		}
 	}
 	public ArrayList<Document> stemWithLovin(ArrayList<Document> docs) {
-		ArrayList<Document> stemmedDocs = new ArrayList<>();
 		IteratedLovinsStemmer ls = new IteratedLovinsStemmer();
-		for (int count = 0; count < docs.size(); count++) {
-			Document doc = new Document();
-			doc.setDocumentName(docs.get(count).getDocumentName());
-            LinkedList<String> words = documents.get(count).getWords();
-            for(String word : words){
-                doc.getWords().add(ls.stem(word));
-
+		for (Document doc : docs) {
+            LinkedList<String> words = doc.getWords();
+            ListIterator<String> iter = words.listIterator(0);
+            while(iter.hasNext()){
+                String word = iter.next();
+                if(!Model.getWordnet().inNoun(word))
+                {
+                    iter.set(ls.stem(word));
+                }
             }
-            stemmedDocs.add(doc);
 		}
-		return stemmedDocs;
+		return docs;
 	}
 	public boolean addStoppingWords(File stopFile) {
 		if (stopFile.canRead()) {
@@ -123,67 +123,47 @@ public class Preprocessing {
      * Perform tfidf and document enrichment.
      */
     public ArrayList<String> preprocessPhase2(ArrayList<DocumentTermFrequency> docs,
-                                              ArrayList<WordInfo> unifiedWordsInfoVector){
+                                              HashMap<String, WordInfo> unifiedWordsInfoVector){
         //prune 1 on terms
         tfidf(docs, unifiedWordsInfoVector);
 
         //store hypernyms
-        for(WordInfo wi : unifiedWordsInfoVector)
+        for(String word : unifiedWordsInfoVector.keySet())
         {
-            wi.hypernyms = Model.getWordnet().getHypernyms(wi.word);
+
+            unifiedWordsInfoVector.get(word).hypernyms = Model.getWordnet().getHypernyms(word);
         }
 
-        //enrich
-        ArrayList<WordInfo> unifiedHypernymsInfoVector = enrichDocument(docs, unifiedWordsInfoVector);
+        //enrich adjusting unified info vector to include new hypernyms
+        enrichDocument(docs, unifiedWordsInfoVector);
 
-        //prune 2 on hypernyms
-        tfidf(docs,unifiedHypernymsInfoVector);
+        //prune 2 on terms+hypernyms
+        tfidf(docs,unifiedWordsInfoVector);
 
-
-        HashSet<String> unifiedWordsVector = new HashSet<>(unifiedHypernymsInfoVector.size()+
-                    unifiedWordsInfoVector.size());
-
-        //add terms
-        for(WordInfo wi: unifiedWordsInfoVector)
-        {
-            unifiedWordsVector.add(wi.word);
-        }
-        //add hypernyms
-        for(WordInfo wi: unifiedHypernymsInfoVector)
-        {
-            unifiedWordsVector.add(wi.word);
-        }
-
-        return new ArrayList<>(unifiedWordsVector);
+        //create an array of terms and return it
+        return new ArrayList<>(unifiedWordsInfoVector.keySet());
     }
 
-    private ArrayList<WordInfo> enrichDocument(ArrayList<DocumentTermFrequency> docs,
-                     ArrayList<WordInfo> unifiedWordsInfoVector)
+    private void enrichDocument(ArrayList<DocumentTermFrequency> docs,
+                                               HashMap<String, WordInfo> unifiedWordsInfoVector)
     {
-        class Value{
-            public HashSet<DocumentTermFrequency> set;
-            public int freq;
-            public Value()
-            {
-                set = new HashSet<>();
-                freq = 0;
-            }
-        }
+
         //mantain a hypernym to make tfidf on it later
-        HashMap<String, Value> globalHypernyms = new HashMap<>();
+        HashMap<String, WordInfo> globalHypernyms = new HashMap<>();
 
         //now enrich each document with hypernyms and store the global freq
         for(DocumentTermFrequency d : docs)
         {
-            for(WordInfo wi : unifiedWordsInfoVector)
+            for(String word : unifiedWordsInfoVector.keySet())
             {
                 //get term frequency
-                int tf = d.getWordFreqUnified(wi.word);
+                int tf = d.getWordFreqUnified(word);
 
                 //if doesnt exist continue
                 if(tf == 0)
                     continue;
 
+                WordInfo wi = unifiedWordsInfoVector.get(word);
                 //if exist enrich document by adding hypernym to it if not exist and increase its count
                 for(String hypernym : wi.hypernyms)
                 {
@@ -191,32 +171,38 @@ public class Preprocessing {
                     d.addTerm(hypernym, tf);
 
                     //ensure hypernyme exist in global hypers
-                    Value globalHyper = globalHypernyms.get(hypernym);
+                    WordInfo globalHyper = globalHypernyms.get(hypernym);
 
                     // if global hyper doesnt exist create it
                     if(globalHyper == null)
                     {
-                        globalHyper = new Value();
+                        globalHyper = new WordInfo();
                         globalHypernyms.put(hypernym, globalHyper);
                     }
                     //add document to the hypernyme
-                    globalHyper.set.add(d);
+                    globalHyper.docs.add(d);
                     //add frequency
                     globalHyper.freq += tf;
                 }
             }
         }
 
-        ArrayList<WordInfo> unifiedHypernymsInfoVector = new ArrayList<>();
-        //now create the unified vector of hypernymes with detailed info
+        //adjust the unified info vector to include the new hypernyms
         for(String word : globalHypernyms.keySet())
         {
-            Value v = globalHypernyms.get(word);
-            unifiedHypernymsInfoVector.add(new WordInfo(word, v.set.size(), v.freq));
-
+            //check if it exist in unified vector and if so add them to each other
+            WordInfo wi = unifiedWordsInfoVector.get(word);
+            if(wi == null)
+            {
+                //new just add this term to the unified vector
+                unifiedWordsInfoVector.put(word, globalHypernyms.get(word));
+            }
+            else {
+                //already there then update
+                wi.addOther(globalHypernyms.get(word));
+            }
         }
 
-        return unifiedHypernymsInfoVector;
     }
     /**
      * Loop over all documents and calculate the tfidf in the first pass. In the second pass
@@ -225,17 +211,18 @@ public class Preprocessing {
      * @param docs
      * @param globals
      */
-    public void tfidf(ArrayList<DocumentTermFrequency> docs, ArrayList<WordInfo> globals)
+    public void tfidf(ArrayList<DocumentTermFrequency> docs,HashMap<String, WordInfo> globals)
     {
         //loop over each document
         for(DocumentTermFrequency d : docs)
         {
             double min = Double.MAX_VALUE; double max = Double.MIN_VALUE;
             //first loop to get min and max
-            for(WordInfo wordInfo : globals)
+            for(String word : globals.keySet())
             {
+                WordInfo wordInfo = globals.get(word);
                 //get tf
-                int tf = d.getWordFreqUnified(wordInfo.word);
+                int tf = d.getWordFreqUnified(word);
 
                 //if word doesnt exist in document or it have frequency 0
                 //then do nothing and continue
@@ -245,8 +232,8 @@ public class Preprocessing {
                 }
 
                 //word exist calculate its tfidf
-                double tfidf = 0.5 + (0.5* (tf/d.getMaxTermFrequency()) *
-                        (Math.log(1+ (docs.size()/wordInfo.df)) ));
+                double tfidf = 0.5 + (0.5* (((double)tf)/d.getMaxTermFrequency()) *
+                        (Math.log(1+ (((double)docs.size())/wordInfo.docs.size())) ));
 
                 //update minmax
                 if(tfidf < min)
@@ -261,28 +248,29 @@ public class Preprocessing {
 
             }
 
-            double threshold = (min+max)/2.0;
+            double threshold = 0.65;
 
             //anther loop to prune
-            Iterator<WordInfo> wordIterator = globals.iterator();
+            Iterator<Map.Entry<String,WordInfo>> wordIterator = globals.entrySet().iterator();
             while(wordIterator.hasNext())
             {
-                WordInfo wordInfo = wordIterator.next();
+                Map.Entry<String, WordInfo> entry = wordIterator.next();
+                WordInfo wordInfo = entry.getValue();
                 //get tf
-                int tf = d.getWordFreqUnified(wordInfo.word);
+                int tf = d.getWordFreqUnified(entry.getKey());
                 //if word doesnt exist in document
                 if(tf == 0)
                 {
                     continue;
                 }
 
-                //word exists calculate its tfidf
-                double tfidf = 0.5 + (0.5* (tf/d.getMaxTermFrequency()) *
-                        (Math.log(1+ (docs.size()/wordInfo.df)) ));
+                //word exist calculate its tfidf
+                double tfidf = 0.5 + (0.5* (((double)tf)/d.getMaxTermFrequency()) *
+                        (Math.log(1+ (((double)docs.size())/wordInfo.docs.size())) ));
 
                 //if less than threshold remove term from document and decrease global count
                 if(tfidf < threshold) {
-                    wordInfo.freq -= d.removeTerm(wordInfo.word);
+                    wordInfo.freq -= d.removeTerm(entry.getKey());
                     //if no more of this word exist in all documents then remove it from globals
                     if(wordInfo.freq <= 0)
                     {
