@@ -6,7 +6,6 @@ import java.util.*;
 
 import Model.DataContainer.Document;
 import Model.StemmingAlgorithms.IteratedLovinsStemmer;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 
 
 public class Preprocessing {
@@ -123,14 +122,13 @@ public class Preprocessing {
      * Perform tfidf and document enrichment.
      */
     public ArrayList<String> preprocessPhase2(ArrayList<DocumentTermFrequency> docs,
-                                              HashMap<String, WordInfo> unifiedWordsInfoVector){
+                                              HashMap<String, WordInfo> unifiedWordsInfoVector, double thhold){
         //prune 1 on terms
-        tfidf(docs, unifiedWordsInfoVector);
+        tfidf(docs, unifiedWordsInfoVector, thhold);
 
         //store hypernyms
         for(String word : unifiedWordsInfoVector.keySet())
         {
-
             unifiedWordsInfoVector.get(word).hypernyms = Model.getWordnet().getHypernyms(word);
         }
 
@@ -138,7 +136,7 @@ public class Preprocessing {
         enrichDocument(docs, unifiedWordsInfoVector);
 
         //prune 2 on terms+hypernyms
-        tfidf(docs,unifiedWordsInfoVector);
+        tfidf(docs,unifiedWordsInfoVector,thhold);
 
         //create an array of terms and return it
         return new ArrayList<>(unifiedWordsInfoVector.keySet());
@@ -211,7 +209,7 @@ public class Preprocessing {
      * @param docs
      * @param globals
      */
-    public void tfidf(ArrayList<DocumentTermFrequency> docs,HashMap<String, WordInfo> globals)
+    public void tfidf(ArrayList<DocumentTermFrequency> docs,HashMap<String, WordInfo> globals, double thhold)
     {
         //loop over each document
         for(DocumentTermFrequency d : docs)
@@ -248,7 +246,7 @@ public class Preprocessing {
 
             }
 
-            double threshold = 0.65;
+            double threshold = thhold;
 
             //anther loop to prune
             Iterator<Map.Entry<String,WordInfo>> wordIterator = globals.entrySet().iterator();
@@ -280,8 +278,4 @@ public class Preprocessing {
             }
         }
     }
-
-
-
-
 }

@@ -5,7 +5,6 @@ import java.util.*;
 import Model.DataContainer.Document;
 import edu.mit.jwi.item.Word;
 
-
 public class Model {
 	private static File[] selectedFiles = null;
 	private static String outputDirectory = null;
@@ -13,7 +12,6 @@ public class Model {
     private static Wordnet wordnet = null;
     private static ArrayList<DocumentTermFrequency> modelDocs = null;
     private static ArrayList<String> unifiedWordsVector = null;
-
 
 	public static  void setSelectedFile(File[] _selectedFiles) {
 		selectedFiles = _selectedFiles;
@@ -59,7 +57,7 @@ public class Model {
 		return documents;
 	}
 
-	public static void preprocessData() {
+	public static void preprocessData(double tfidfTh) {
         //get documents from file
 		ArrayList<Document> documents = extractDocumentWords();
 		Preprocessing pre = new Preprocessing();
@@ -71,12 +69,13 @@ public class Model {
         //empty used data
         pre.unsetWords();
 
+        
         //get documents with term frequencies and detailed global words
         HashMap<String, WordInfo> unifiedWordsInfoVector = new HashMap<>();
 		createUnifiedTermFrequency(documents, unifiedWordsInfoVector);
 
         //start phase 2
-        unifiedWordsVector = pre.preprocessPhase2(modelDocs, unifiedWordsInfoVector);
+        unifiedWordsVector = pre.preprocessPhase2(modelDocs, unifiedWordsInfoVector, tfidfTh);
 
         //write output
 		writeOutput(unifiedWordsVector);
@@ -111,13 +110,9 @@ public class Model {
                 globalValue.docs.add(dtf);
                 //add frequency
                 globalValue.freq += 1;
-
-
 			}
 			modelDocs.add(dtf);
 		}
-
-
 	}
 
     private static void writeOutput(ArrayList<String> globalWords) {

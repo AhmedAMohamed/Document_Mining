@@ -5,8 +5,10 @@ import Model.Model;
 
 public class Controller {
     private Model model;
-    public Controller(){
+    public double thTfidf;
+    public Controller(double thHold){
         model = new Model();
+        thTfidf = thHold;
     }
 
     public void setFile(File[] files)
@@ -18,7 +20,7 @@ public class Controller {
     {
         model.setOutputDirectory(dir);
     }
-    public void startPreprocessing(){
-        model.preprocessData();
+    public void startPreprocessing(double thHold){
+        model.preprocessData(thHold);
     }
 }
