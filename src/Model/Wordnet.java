@@ -35,7 +35,7 @@ public class Wordnet {
 
     }
 
-    public  ArrayList<String> getHypernyms (String _word) {
+    public  ArrayList<String> getHypernyms (String _word, int levels) {
         // get the synset
         IIndexWord idxWord = dict .getIndexWord(_word , POS. NOUN ) ;
         if(idxWord == null)
@@ -48,8 +48,8 @@ public class Wordnet {
         // get the hypernyms
         List<ISynsetID> hypernyms =
                 synset .getRelatedSynsets(Pointer.HYPERNYM) ;
-        ArrayList<String> hypers = new ArrayList<>(5);
-        while(!hypernyms.isEmpty() && hypers.size() < 5)
+        ArrayList<String> hypers = new ArrayList<>(levels);
+        while(!hypernyms.isEmpty() && hypers.size() < levels)
         {
             ISynset s = dict.getSynset(hypernyms.get(0));
             hypers.add(s.getWords().get(0).getLemma());

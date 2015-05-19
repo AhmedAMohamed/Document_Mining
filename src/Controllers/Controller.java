@@ -6,9 +6,11 @@ import Model.Model;
 public class Controller {
     private Model model;
     public double thTfidf;
-    public Controller(double thHold){
+    public int wordNetLevel;
+    public Controller(double thHold, int levels){
         model = new Model();
         thTfidf = thHold;
+        wordNetLevel = levels;
     }
 
     public void setFile(File[] files)
@@ -20,7 +22,9 @@ public class Controller {
     {
         model.setOutputDirectory(dir);
     }
-    public void startPreprocessing(double thHold){
-        model.preprocessData(thHold);
+    public void startPreprocessing(){
+    	System.out.println("start");
+        model.preprocessData(thTfidf,wordNetLevel);
+        System.out.println("end");
     }
 }

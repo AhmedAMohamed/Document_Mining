@@ -122,14 +122,14 @@ public class Preprocessing {
      * Perform tfidf and document enrichment.
      */
     public ArrayList<String> preprocessPhase2(ArrayList<DocumentTermFrequency> docs,
-                                              HashMap<String, WordInfo> unifiedWordsInfoVector, double thhold){
+                                              HashMap<String, WordInfo> unifiedWordsInfoVector, double thhold, int levels){
         //prune 1 on terms
         tfidf(docs, unifiedWordsInfoVector, thhold);
 
         //store hypernyms
         for(String word : unifiedWordsInfoVector.keySet())
         {
-            unifiedWordsInfoVector.get(word).hypernyms = Model.getWordnet().getHypernyms(word);
+            unifiedWordsInfoVector.get(word).hypernyms = Model.getWordnet().getHypernyms(word, levels);
         }
 
         //enrich adjusting unified info vector to include new hypernyms

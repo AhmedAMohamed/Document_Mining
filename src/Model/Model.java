@@ -57,7 +57,7 @@ public class Model {
 		return documents;
 	}
 
-	public static void preprocessData(double tfidfTh) {
+	public static void preprocessData(double tfidfTh, int levels) {
         //get documents from file
 		ArrayList<Document> documents = extractDocumentWords();
 		Preprocessing pre = new Preprocessing();
@@ -75,7 +75,7 @@ public class Model {
 		createUnifiedTermFrequency(documents, unifiedWordsInfoVector);
 
         //start phase 2
-        unifiedWordsVector = pre.preprocessPhase2(modelDocs, unifiedWordsInfoVector, tfidfTh);
+        unifiedWordsVector = pre.preprocessPhase2(modelDocs, unifiedWordsInfoVector, tfidfTh, levels);
 
         //write output
 		writeOutput(unifiedWordsVector);

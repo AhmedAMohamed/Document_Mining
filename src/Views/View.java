@@ -16,7 +16,7 @@ public class View {
 	private Controller controller;
 
 	public View() {
-		controller = new Controller(0.65);
+		controller = new Controller(0.65, 5);
 		setupGUI();
 
 	}
@@ -81,7 +81,7 @@ public class View {
 				panel.add(load);
 				frame.validate();
 				frame.repaint();
-				controller.startPreprocessing(controller.thTfidf);
+				controller.startPreprocessing();
 				panel.remove(load);
 				panel.add(new JLabel("Done."));
 				frame.validate();
