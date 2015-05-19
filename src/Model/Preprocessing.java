@@ -62,17 +62,15 @@ public class Preprocessing {
 		}
 	}
 	public ArrayList<Document> stemWithLovin(ArrayList<Document> docs) {
+		ArrayList<Document> nDocs = new ArrayList<>(docs.size());
 		IteratedLovinsStemmer ls = new IteratedLovinsStemmer();
-		for (Document doc : docs) {
-            LinkedList<String> words = doc.getWords();
-            ListIterator<String> iter = words.listIterator(0);
-            while(iter.hasNext()){
-                String word = iter.next();
-                if(!Model.getWordnet().inNoun(word))
-                {
-                    iter.set(ls.stem(word));
-                }
-            }
+		for(Document d : docs) {
+			Document doc = new Document();
+			doc.setDocumentName(d.getDocumentName());
+			for(String word : d.getWords()) {
+				doc.getWords().add(ls.stem(word));
+			}
+			nDocs.add(doc);
 		}
 		return docs;
 	}
