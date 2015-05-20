@@ -9,7 +9,9 @@ public class WordInfo {
     private int freq;
     public ArrayList<String> hypernyms;
     public int maxFreq, minFreq;
-    public double acc = 0;
+    public double average = 0;
+    public FuzzyState fuzzyState;
+    public double[] count;
 
     private DocumentTermFrequency curDoc;
     public WordInfo()
@@ -20,8 +22,9 @@ public class WordInfo {
         curDoc = null;
         minFreq = Integer.MAX_VALUE;
         maxFreq = Integer.MIN_VALUE;
-        acc = 0;
-
+        average = 0;
+        fuzzyState = FuzzyState.NONE;
+        count = new double[3]; 	
     }
 
     public void addOther(WordInfo wi)
@@ -66,21 +69,19 @@ public class WordInfo {
             if(f> maxFreq)
                 maxFreq = f;
 
-            acc+=f;
+            average+=f;
 
         }
 
-        if(empty && acc > 0)
+        if(empty && average > 0)
         {
             System.out.println("Failed Empty but has words in document: " + word);
         }
-        else if(!empty && acc == 0)
+        else if(!empty && average == 0)
         {
             System.out.println("Failed npt empty but has no words in document: " + word);
         }
-        acc /= K;
+        average /= K;
         return (freq != 0);
     }
-
-
 }
