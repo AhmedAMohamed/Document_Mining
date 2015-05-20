@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="F:/Document_Mining/lib/JWI/edu.mit.jwi_2.3.3_javadoc.zip"/>
 	<classpathentry kind="lib" path="F:/Document_Mining/lib/JWI/edu.mit.jwi_2.3.3_jdk.jar"/>
+	<classpathentry kind="lib" path="F:/Document_Mining/lib/MatrixOperations/Jama-1.0.3.jar"/>
+	<classpathentry kind="lib" path="F:/Document_Mining/lib/MatrixOperations/ejml-0.7.jar.zip"/>
+	<classpathentry kind="lib" path="F:/Document_Mining/lib/MatrixOperations/commons-math3-3.5-bin.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
