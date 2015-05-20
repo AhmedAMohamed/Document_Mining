@@ -1,4 +1,3 @@
-package Model;
 import java.util.HashMap;
 
 public class DocumentTermFrequency {
@@ -17,40 +16,43 @@ public class DocumentTermFrequency {
         return maxTermFrequency;
     }
 
-    public void addTerm(String word){
-        addTerm(word, 1);
+    public int addTerm(String word){
+        return addTerm(word, 1);
     }
 
-    public void addTerm(String word, int freq){
+    public int addTerm(String word, int freq){
         Integer stored = termFreq.get(word);
         if(stored != null)
         {
             termFreq.put(word, stored.intValue() + freq);
             if(stored+freq > maxTermFrequency)
                 maxTermFrequency = stored + freq;
+
+            return stored + freq;
         }
-        else
-        {
-            termFreq.put(word, freq);
-            if(freq > maxTermFrequency)
-                maxTermFrequency =  freq;
-        }
+
+        termFreq.put(word, freq);
+        if(freq > maxTermFrequency)
+            maxTermFrequency =  freq;
+
+        return freq;
     }
-    public int removeTerm(String word)
+    public void removeTerm(String word)
     {
-        return termFreq.remove(word);
+        termFreq.put(word, 0);
+
     }
 
     public String getName(){
         return name;
     }
-    public int getWordFreq(String word)
+    public int getActualWordFreq(String word)
     {
         Integer stored = termFreq.get(word);
         return stored == null ? -1: stored.intValue();
     }
 
-    public int getWordFreqUnified(String word)
+    public int getWordFreq(String word)
     {
         Integer stored = termFreq.get(word);
         return stored == null ? 0: stored.intValue();

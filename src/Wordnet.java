@@ -1,5 +1,3 @@
-package Model;
-
 import edu.mit.jwi.IDictionary;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
@@ -7,7 +5,7 @@ import edu.mit.jwi.data.ILoadPolicy;
 import edu.mit.jwi.item.*;
 
 import java.io.File;
-import java.io.IOException;
+import java.security.AlgorithmConstraints;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,11 @@ public class Wordnet {
 
     }
 
-    public  ArrayList<String> getHypernyms (String _word, int levels) {
+    public void close(){
+        dict.close();
+    }
+
+    public  ArrayList<String> getHypernyms (String _word) {
         // get the synset
         IIndexWord idxWord = dict .getIndexWord(_word , POS. NOUN ) ;
         if(idxWord == null)
@@ -48,8 +50,8 @@ public class Wordnet {
         // get the hypernyms
         List<ISynsetID> hypernyms =
                 synset .getRelatedSynsets(Pointer.HYPERNYM) ;
-        ArrayList<String> hypers = new ArrayList<>(levels);
-        while(!hypernyms.isEmpty() && hypers.size() < levels)
+        ArrayList<String> hypers = new ArrayList<>(Algorithm.hypernymCount);
+        while(!hypernyms.isEmpty() && hypers.size() < Algorithm.hypernymCount)
         {
             ISynset s = dict.getSynset(hypernyms.get(0));
             hypers.add(s.getWords().get(0).getLemma());
@@ -58,8 +60,4 @@ public class Wordnet {
         return hypers;
     }
 
-    public boolean inNoun(String _word){
-        return dict.getIndexWord(_word, POS.NOUN) != null;
-
-    }
 }

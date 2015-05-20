@@ -1,4 +1,4 @@
-package Model.StemmingAlgorithms;
+package StemmingAlgorithms;
 import java.util.*;
 
 /*

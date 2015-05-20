@@ -1,8 +1,5 @@
-package Views;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import Controllers.Controller;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +13,7 @@ public class View {
 	private Controller controller;
 
 	public View() {
-		controller = new Controller(0.65, 5);
+		controller = new Controller();
 		setupGUI();
 
 	}
