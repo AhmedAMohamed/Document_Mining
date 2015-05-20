@@ -11,12 +11,12 @@ import java.util.HashMap;
  */
 public class Algorithm {
     public static String documentDirectory = "classic";
-    public static double tfidfThreshold = 0.65;
+    public static double tfidfThreshold = 0.99;
     public static int hypernymCount = 5;
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
     private static Wordnet wordnet;
-    public static String mainDirectory = "/home/karim/Documents/data_mine_project/Document_Mining/";
+    public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
 
 
 
@@ -52,7 +52,6 @@ public class Algorithm {
         }
         return wordnet;
     }
-
 
     private static ArrayList<File> getFiles(String folderName) {
         File folder = new File(folderName);

@@ -103,7 +103,6 @@ public class Preprocess {
         for (File file : files) {
             DocumentTermFrequency d = new DocumentTermFrequency(file.getName());
             try {
-
                 BufferedReader br = new BufferedReader(new InputStreamReader(
                         new FileInputStream(file)));
                 String line;
@@ -114,12 +113,13 @@ public class Preprocess {
                         //keep letters only
                         String word =w.replaceAll("[^A-Za-z]+", "");
 
-                        //if short ignore
+                        
+                      //if short ignore
                         if(word.length() < 3)
                         {
                             continue;
                         }
-
+                        
                         //if stop word ignore
                         if(stoppingWords.contains(word))
                         {
@@ -129,8 +129,16 @@ public class Preprocess {
 
                         //stem and add
                         word = ls.stem(word);
+                      
+                      //if short ignore
+                        if(word.length() < 3)
+                        {
+                            continue;
+                        }
+                        
                         d.addTerm(word);
 
+                        
                         //update wordsVector
                         WordInfo globalValue = wordsVector.get(word);
                         // if global word doesnt exist create it
