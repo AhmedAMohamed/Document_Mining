@@ -12,6 +12,8 @@ public class WordInfo {
     public double average = 0;
     public FuzzyState fuzzyState;
     public double[] count;
+    public FuzzyState maxFuzzyVarriable;
+    public double maxCount;
 
     private DocumentTermFrequency curDoc;
     public WordInfo()
