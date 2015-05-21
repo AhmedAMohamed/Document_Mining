@@ -32,17 +32,28 @@ public class Clustering {
 		this.dtm = new Matrix(dtm);
 	}
 	
-	public void calculateScore(Cluster cluster) {
+	public double calculateScore(Cluster cluster) {
 		double score = 0;
 		for(DocumentTermFrequency d : cluster.docs) {
 			for(String word : wordsVector.keySet()) {
 				score += d.getFuzzyValue(word, d.getWordMaxFuzzyValue(word));
 			}
 		}
+		return score;
 	}
 	
 	public void constructTDM() {
 		double[][] tdm = new double[wordsVector.size()][candidateClusters.size()];
+		int i = 0;
+		for(String word : wordsVector.keySet()) {
+			int j = 0;
+			for(Cluster c : candidateClusters) {
+				tdm[i][j] = calculateScore(c)/wordsVector.get(word).maxCount;
+				j++;
+			}
+			i++;
+		}
+		this.tdm = new Matrix(tdm);
 	}
 	
 	public void calculateDcm() {
