@@ -15,6 +15,7 @@ public class Algorithm {
     public static int hypernymCount = 5;
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
+    public static double minSuport = 0.7;
     private static Wordnet wordnet;
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
 

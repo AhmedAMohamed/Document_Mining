@@ -24,7 +24,6 @@ public class Cluster implements Comparator<Cluster> {
 		for(int i = 1; i < terms.size(); i++) {
 			docs.retainAll(wordsVector.get(terms.get(i)).docs);
 		}
-    	
     }
     
     @Override
