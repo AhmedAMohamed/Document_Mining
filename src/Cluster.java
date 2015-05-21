@@ -1,10 +1,13 @@
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Cluster implements Comparator<Cluster> {
     public ArrayList<String> terms;
     public double support;
-    
+    public Set<DocumentTermFrequency> docs; 
     
     public Cluster() {
         terms = new ArrayList<>();
@@ -16,7 +19,13 @@ public class Cluster implements Comparator<Cluster> {
     	this.support = support; 
     }
     
-    
+    public void updateClusterDocuments(HashMap<String, WordInfo> wordsVector) {
+		docs = new HashSet<>(wordsVector.get(terms.get(0)).docs);
+		for(int i = 1; i < terms.size(); i++) {
+			docs.retainAll(wordsVector.get(terms.get(i)).docs);
+		}
+    	
+    }
     
     @Override
     public boolean equals(Object o) {
