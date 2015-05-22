@@ -2,11 +2,18 @@ import java.util.ArrayList;
 
 public class Cluster {
     public ArrayList<String> terms;
-    public double support;
 
     public Cluster(){
         terms = new ArrayList<>();
-        support = 0;
+    }
+
+    public Cluster(ArrayList<String> terms){
+        this.terms = terms;
+    }
+
+    public Cluster(String str){
+        terms = new ArrayList<>();
+        terms.add(str);
     }
 
 

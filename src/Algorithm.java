@@ -13,9 +13,12 @@ public class Algorithm {
     public static String documentDirectory = "classic";
     public static double tfidfThreshold = 0.99;
     public static int hypernymCount = 5;
+    public static double minSup= 0.7;
+    public static double confidence= 0.7;
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
     private static Wordnet wordnet;
+
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
 
 
