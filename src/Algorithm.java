@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by karim on 5/19/15.
@@ -18,7 +20,6 @@ public class Algorithm {
     public static double minSuport = 0.7;
     private static Wordnet wordnet;
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
-
 
 
     public static void main(String[] args) throws IOException {
@@ -42,9 +43,17 @@ public class Algorithm {
 
         System.out.println("Total: " + (System.currentTimeMillis() - start) / 1000f + " seconds");
         System.out.println("Count of Failures: " + count);
+        
+        Set<String> w = wordsVector.keySet();
+        String[] q = w.toArray(new String[w.size()]);;
+        HashSet<DocumentTermFrequency> e = wordsVector.get(q[0]).docs;
+        for(DocumentTermFrequency r : e) {
+        	System.out.println(r.getName());
+        }
 
 
     }
+    
 
     public static Wordnet getWordnet(){
         if(wordnet == null)

@@ -48,7 +48,7 @@ public class AssociationRuleMining {
     		
     		if(l >= m && l >= h) {
     			wordsVector.get(word).maxFuzzyVarriable = FuzzyState.LOW;
-    			wordsVector.get(word).maxCount = l;
+    			wordsVector.get(word).maxFuzzyValue = l;
     			
     			if(l/documents.size() > support) {
     				ArrayList<String> terms = new ArrayList<>();
@@ -59,7 +59,7 @@ public class AssociationRuleMining {
     		}
     		else if(m >= l && m >= h) {
     			wordsVector.get(word).maxFuzzyVarriable = FuzzyState.MEDIUM;
-    			wordsVector.get(word).maxCount = m;
+    			wordsVector.get(word).maxFuzzyValue = m;
     			
     			if(m/documents.size() > support) {
     				ArrayList<String> terms = new ArrayList<>();
@@ -69,7 +69,7 @@ public class AssociationRuleMining {
     		}
     		else {
     			wordsVector.get(word).maxFuzzyVarriable = FuzzyState.HIGH;
-    			wordsVector.get(word).maxCount = h;
+    			wordsVector.get(word).maxFuzzyValue = h;
     			
     			if(h/documents.size() > support) {
     				ArrayList<String> terms = new ArrayList<>();

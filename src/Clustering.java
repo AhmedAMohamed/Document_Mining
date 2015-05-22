@@ -5,6 +5,7 @@ import Jama.Matrix;
 
 public class Clustering {
 
+		
 	ArrayList<DocumentTermFrequency> documents;
 	HashMap<String,WordInfo> wordsVector;
 	ArrayList<Cluster> candidateClusters;
@@ -48,7 +49,7 @@ public class Clustering {
 		for(String word : wordsVector.keySet()) {
 			int j = 0;
 			for(Cluster c : candidateClusters) {
-				tdm[i][j] = calculateScore(c)/wordsVector.get(word).maxCount;
+				tdm[i][j] = calculateScore(c)/wordsVector.get(word).maxFuzzyValue;
 				j++;
 			}
 			i++;
@@ -59,6 +60,4 @@ public class Clustering {
 	public void calculateDcm() {
 		dcm = dtm.times(tdm);
 	}
-	
-	
 }
