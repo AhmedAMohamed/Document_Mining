@@ -250,19 +250,15 @@ public class Preprocess {
      */
     private  static void tfidf(ArrayList<DocumentTermFrequency> docs,HashMap<String, WordInfo> globals)
     {
-        int dc = 0;
         //loop over each document
         for(DocumentTermFrequency d : docs)
         {
-            dc++;
             double threshold = Algorithm.tfidfThreshold;
 
-            int wc = 0;
             //anther loop to prune
             Iterator<Map.Entry<String,WordInfo>> wordIterator = globals.entrySet().iterator();
             while(wordIterator.hasNext())
             {
-                wc++;
                 Map.Entry<String, WordInfo> entry = wordIterator.next();
                 WordInfo wordInfo = entry.getValue();
                 //get tf

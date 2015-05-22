@@ -10,7 +10,7 @@ public class Algorithm {
     public static int hypernymCount = 3;
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
-    public static double minSup = 0.25;
+    public static double minSup = 0.20;
     private static Wordnet wordnet;
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
 
@@ -25,7 +25,7 @@ public class Algorithm {
         //close wordnet
         wordnet.close();
 
-        Preprocess.saveToFile();
+        //Preprocess.saveToFile();
 
         int count = 0;
         //update minmax + check if any word is empty in all documents
@@ -37,14 +37,22 @@ public class Algorithm {
         System.out.println("Total: " + (System.currentTimeMillis() - start) / 1000f + " seconds");
         System.out.println("Count of Failures: " + count);
 
-        
         AssociationRuleMining rule = new AssociationRuleMining(documents, wordsVector);
+        
         rule.getL1(minSup);
-        System.out.println("finished");
-        System.out.println();
-        System.out.println(rule.L1.size());
-        for(Cluster c : rule.L1) {
-        	System.out.println(c.terms.get(0) + " support " + c.support);
+        ArrayList<ArrayList<Cluster>> q = Apriori.getFrequentItemsets(rule.L1, documents, wordsVector);
+        int i = 0;
+        for(ArrayList<Cluster> e : q) {
+        	i++;
+        	System.out.println();
+        	System.out.println("clusters of size " + i);
+        	for(Cluster c : e) {
+        		System.out.print("{ ");
+        		for(String word : c.terms) {
+        			System.out.print(word + ", ");
+        		}
+        		System.out.println("}");
+        	}
         }
     }
 

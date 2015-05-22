@@ -8,6 +8,7 @@ public class Cluster implements Comparator<Cluster> {
     public ArrayList<String> terms;
     public double support;
     public Set<DocumentTermFrequency> docs; 
+    public double totalWMax;
     
     public Cluster() {
         terms = new ArrayList<>();

@@ -7,8 +7,7 @@ public class Clustering {
 		
 	ArrayList<DocumentTermFrequency> documents;
 	HashMap<String,WordInfo> wordsVector;
-	ArrayList<ArrayList<Cluster>> candidateClusters;
-	
+	ArrayList<Cluster> candidateClusters;
 	
 	public static Matrix dtm;
 	public static Matrix tdm;
@@ -17,6 +16,7 @@ public class Clustering {
 	public Clustering(HashMap<String, WordInfo> wordsVector, ArrayList<DocumentTermFrequency> documents, ArrayList<Cluster> candidateClusters) {
 		this.documents = documents;
 		this.wordsVector = wordsVector;
+		this.candidateClusters = candidateClusters;
 	}
 	
 	public void constructDTM() {
@@ -36,27 +36,39 @@ public class Clustering {
 	public double calculateScore(Cluster cluster) {
 		double score = 0;
 		for(DocumentTermFrequency doc : cluster.docs) {
-			
+			for(String word : cluster.terms) {
+				score += doc.getFuzzyValue(word, wordsVector.get(word).maxFuzzyVarriable);
+			}
 		}
 		return score;
 	}
 	
 	public void constructTDM() {
 		double[][] tdm = new double[wordsVector.size()][candidateClusters.size()];
-		int i = 0;
-		for(String word : wordsVector.keySet()) {
-			int j = 0;
-			/*
+
+		int j = 0;
+		double totalMaxW = calculateTotalMaxW();
+		for(int i = 0; i < tdm.length; i++) {
+			j = 0;
 			for(Cluster c : candidateClusters) {
-				tdm[i][j] = calculateScore(c)/wordsVector.get(word).maxFuzzyValue;
+				tdm[i][j] = calculateScore(c) / totalMaxW; 
 				j++;
 			}
-			*/
-			i++;
 		}
 		this.tdm = new Matrix(tdm);
 	}
+
 	
+	private double calculateTotalMaxW() {
+		double max = 0;
+		for(DocumentTermFrequency doc : documents) {
+			for(String word : wordsVector.keySet()) {
+				max += doc.getFuzzyValue(word, wordsVector.get(word).maxFuzzyVarriable);
+			}
+		}
+		return max;
+	}
+
 	public void calculateDcm() {
 		dcm = dtm.times(tdm);
 	}

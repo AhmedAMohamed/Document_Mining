@@ -2,151 +2,134 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-
 public class Apriori {
 
+	public static ArrayList<ArrayList<Cluster>> getFrequentItemsets(
+			ArrayList<Cluster> l1, ArrayList<DocumentTermFrequency> docs,
+			HashMap<String, WordInfo> wordsVector) {
 
+		ArrayList<ArrayList<Cluster>> output = new ArrayList<>();
+		output.add(l1);
 
-    private static ArrayList<ArrayList<Cluster>> getFrequentItemsets(ArrayList<Cluster> l1,
-                                                                     ArrayList<DocumentTermFrequency> docs,
-                                                                     HashMap<String, WordInfo> wordsVector){
+		while (true) {
+			ArrayList<Cluster> L = output.get(output.size() - 1);
+			if (L.isEmpty()) {
+				output.remove(output.size() - 1);
+				break;
+			}
+			// generate candidate
+			ArrayList<Cluster> candidates = generateCandidates(L);
+			// add the new L
+			output.add(generateNextL(candidates, docs, wordsVector));
+		}
 
-        ArrayList<ArrayList<Cluster>> output = new ArrayList<>();
-        output.add(l1);
+		return output;
+	}
 
-        while(true)
-        {
-            ArrayList<Cluster> L = output.get(output.size()-1);
-            if(L.isEmpty())
-            {
-                output.remove(output.size()-1);
-                break;
-            }
-            //generate candidate
-            ArrayList<Cluster> candidates = generateCandidates(L);
-            //add the new L
-            output.add(generateNextL(candidates, docs, wordsVector));
-        }
+	private static ArrayList<Cluster> generateNextL(
+			ArrayList<Cluster> candidates,
+			ArrayList<DocumentTermFrequency> docs,
+			HashMap<String, WordInfo> wordsVector) {
+		ArrayList<Cluster> nextL = new ArrayList<>();
 
+		for (Cluster c : candidates) {
+			double w = 0;
 
-        return output;
-    }
+			// eextract fuzzy support of cluser from documents
+			for (DocumentTermFrequency d : docs) {
+				double min = Double.MAX_VALUE;
+				for (String t : c.terms) {
+					double v = d
+							.getFuzzyValue(t, wordsVector.get(t).maxFuzzyVarriable);
+					if (v < min)
+						min = v;
+				}
+				w += min;
+			}
 
-    private static ArrayList<Cluster> generateNextL(ArrayList<Cluster> candidates, ArrayList<DocumentTermFrequency> docs,
-                                                   HashMap<String, WordInfo> wordsVector) {
-        ArrayList<Cluster> nextL = new ArrayList<>();
+			// if fuzzy support is greater than minsup then add it and continue
+			if ((w / docs.size()) >= Algorithm.minSup) {
+				nextL.add(c);
+			}
 
-        for(Cluster c : candidates)
-        {
-            double w = 0;
+		}
 
-            //eextract fuzzy support of cluser from documents
-            for(DocumentTermFrequency d : docs)
-            {
-                double min = Double.MAX_VALUE;
-                for(String t : c.terms)
-                {
-                    double v = d.getFuzzyValue(t,wordsVector.get(t).fuzzyState);
-                    if(v < min)
-                        min = v;
-                }
-                w += min;
-            }
+		return nextL;
+	}
 
-            //if fuzzy support is greater than minsup then add it and continue
-            if((w/ docs.size()) >= Algorithm.minSup)
-            {
-                nextL.add(c);
-            }
+	private static ArrayList<Cluster> generateCandidates(ArrayList<Cluster> L) {
+		HashSet<Cluster> seen = new HashSet<>(L);
+		ArrayList<Cluster> candidates = new ArrayList<>();
 
+		// join
+		for (int i = 0; i < L.size(); i++) {
+			for (int j = i + 1; j < L.size(); j++) {
+				Cluster joined = tryJoin(L.get(i), L.get(j));
+				if (joined == null)
+					break;
 
+				if (!tryPrune(joined, seen))
+					candidates.add(joined);
+			}
+		}
+		return candidates;
+	}
 
-        }
+	private static boolean tryPrune(Cluster joined, HashSet<Cluster> seen) {
+		ArrayList<String> arr = new ArrayList<>(joined.terms.size() - 1);
+		while (arr.size() < joined.terms.size() - 1)
+			arr.add("");
+		return !combinations(seen, joined, joined.terms.size() - 1, 0,
+				new Cluster(arr));
+	}
 
+	private static Cluster tryJoin(Cluster a, Cluster b) {
 
-        return nextL;
-    }
+		ArrayList<String> joined = new ArrayList<>(a.terms.size() + 1);
+		// check for prefixes
+		boolean same = true;
+		for (int i = 0; i < a.terms.size() - 1; i++) {
+			if (!a.terms.get(i).equals(b.terms.get(i))) {
+				same = false;
+				break;
+			}
+			joined.add(a.terms.get(i));
+		}
+		// if not same prefix exit
+		if (!same) {
+			return null;
+		}
+		// add last in a
+		joined.add(a.terms.get(a.terms.size() - 1));
+		// add last in b
+		joined.add(b.terms.get(b.terms.size() - 1));
 
-    private static ArrayList<Cluster> generateCandidates(ArrayList<Cluster> L) {
-        HashSet<Cluster> seen = new HashSet<>(L);
-        ArrayList<Cluster> candidates = new ArrayList<>();
+		return new Cluster(joined);
 
-        //join
-        for(int i = 0; i < L.size(); i++)
-        {
-            for(int j = i+1; j < L.size(); j++)
-            {
-                Cluster joined = tryJoin(L.get(i), L.get(j));
-                if(joined == null)
-                    break;
+	}
 
-                if(!tryPrune(joined, seen))
-                    candidates.add(joined);
-            }
-        }
-        return candidates;
-    }
+	static boolean combinations(HashSet<Cluster> seen, Cluster arr, int len,
+			int startPosition, Cluster result) {
+		if (len == 0) {
+			return seen.contains(result);
+		}
+		for (int i = startPosition; i <= arr.terms.size() - len; i++) {
+			result.terms.set(result.terms.size() - len, arr.terms.get(i));
+			if (!combinations(seen, arr, len - 1, i + 1, result))
+				return false;
+		}
 
-    private static boolean tryPrune(Cluster joined, HashSet<Cluster> seen) {
-        ArrayList<String> arr = new ArrayList<>(joined.terms.size()-1);
-        while(arr.size() < joined.terms.size()-1) arr.add("");
-        return !combinations(seen, joined, joined.terms.size()-1, 0,
-                new Cluster(arr));
-    }
+		return true;
+	}
 
-    private static Cluster tryJoin(Cluster a, Cluster b)
-    {
+	public static void main(String[] args) {
 
-        ArrayList<String> joined = new ArrayList<>(a.terms.size()+1);
-        //check for prefixes
-        boolean same = true;
-        for(int i = 0; i < a.terms.size()-1; i++)
-        {
-            if(!a.terms.get(i).equals(b.terms.get(i)))
-            {
-                same =false;
-                break;
-            }
-            joined.add(a.terms.get(i));
-        }
-        //if not same prefix exit
-        if(!same)
-        {
-            return null;
-        }
-        //add last in a
-        joined.add(a.terms.get(a.terms.size()-1));
-        //add last in b
-        joined.add(b.terms.get(b.terms.size() - 1));
-
-        return new Cluster(joined);
-
-    }
-
-    static boolean combinations(HashSet<Cluster> seen,
-                        Cluster arr, int len, int startPosition, Cluster result){
-        if (len == 0){
-            return seen.contains(result);
-        }
-        for (int i = startPosition; i <= arr.terms.size()-len; i++){
-            result.terms.set(result.terms.size() - len, arr.terms.get(i));
-            if(!combinations(seen, arr, len-1, i+1, result))
-                return false;
-        }
-
-        return true;
-    }
-
-
-    public static void main(String[] args) {
-
-
-//        for(Cluster it: c)
-//        {
-//            for(String s: it.terms){
-//                System.out.print(s + ", ");
-//            }
-//            System.out.println();
-//        }
-    }
+		// for(Cluster it: c)
+		// {
+		// for(String s: it.terms){
+		// System.out.print(s + ", ");
+		// }
+		// System.out.println();
+		// }
+	}
 }
