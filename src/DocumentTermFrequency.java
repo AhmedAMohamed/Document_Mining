@@ -79,6 +79,26 @@ public class DocumentTermFrequency {
     	}
     }
     
+    public FuzzyState getWordMaxFuzzyValue(String word) {
+    	Info stored = termFreq.get(word);
+    	if(stored != null) {
+    		double l = getFuzzyValue(word, FuzzyState.LOW);
+    		double m = getFuzzyValue(word, FuzzyState.MEDIUM);
+    		double h = getFuzzyValue(word, FuzzyState.HIGH);
+    		if(l >= m && l >= h) {
+    			return FuzzyState.LOW;
+    		}
+    		else if(m >= l && m >= h) {
+    			return FuzzyState.MEDIUM;
+    		}
+    		else {
+    			return FuzzyState.HIGH;
+    		}
+    		
+    	}
+    	return FuzzyState.NONE;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

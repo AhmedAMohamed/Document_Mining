@@ -1,9 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 
-/**
- * Created by karim on 5/7/15.
- */
 public class WordInfo {
     public HashSet<DocumentTermFrequency> docs;
     private int freq;
@@ -12,7 +9,9 @@ public class WordInfo {
     public double average = 0;
     public FuzzyState fuzzyState;
     public double[] count;
-
+    public FuzzyState maxFuzzyVarriable;
+    public double maxFuzzyValue;
+    
     private DocumentTermFrequency curDoc;
     public WordInfo()
     {

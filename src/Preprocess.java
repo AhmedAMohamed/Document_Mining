@@ -169,11 +169,12 @@ public class Preprocess {
      */
     private static void applyPhas2(ArrayList<DocumentTermFrequency> docs,
                                               HashMap<String, WordInfo> globalWords){
+    	System.out.println("word vector:  " + globalWords.size());
         long start = System.currentTimeMillis();
         //prune 1 on terms
         tfidf(docs, globalWords);
         System.out.println("tfidf 1: " + (System.currentTimeMillis() - start)/1000.0);
-
+        System.out.println("word vector:  " + globalWords.size());
         start = System.currentTimeMillis();
         for(String s : globalWords.keySet())
         {
@@ -181,16 +182,18 @@ public class Preprocess {
         }
         System.out.println("wordnet: " + (System.currentTimeMillis() - start)/1000.0);
 
+        
         start = System.currentTimeMillis();
         //enrich adjusting unified info vector to include new hypernyms
         enrichDocument(docs, globalWords);
         System.out.println("enrich: " + (System.currentTimeMillis() - start)/1000.0);
-
+        
+        System.out.println("word vector:  " + globalWords.size());
         start = System.currentTimeMillis();
         //prune 2 on terms+hypernyms
         tfidf(docs,globalWords);
         System.out.println("tfidf 2: " + (System.currentTimeMillis() - start)/1000.0);
-
+        System.out.println("word vector:  " + globalWords.size());
     }
 
     private static void enrichDocument(ArrayList<DocumentTermFrequency> docs,

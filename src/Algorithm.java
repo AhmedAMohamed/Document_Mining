@@ -1,26 +1,18 @@
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
-/**
- * Created by karim on 5/19/15.
- */
+
 public class Algorithm {
     public static String documentDirectory = "classic";
-    public static double tfidfThreshold = 0.99;
-    public static int hypernymCount = 5;
-    public static double minSup= 0.7;
-    public static double confidence= 0.7;
+    public static double tfidfThreshold = 0.8;
+    public static int hypernymCount = 3;
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
+    public static double minSup = 0.25;
     private static Wordnet wordnet;
-
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
-
 
 
     public static void main(String[] args) throws IOException {
@@ -45,7 +37,15 @@ public class Algorithm {
         System.out.println("Total: " + (System.currentTimeMillis() - start) / 1000f + " seconds");
         System.out.println("Count of Failures: " + count);
 
-
+        
+        AssociationRuleMining rule = new AssociationRuleMining(documents, wordsVector);
+        rule.getL1(minSup);
+        System.out.println("finished");
+        System.out.println();
+        System.out.println(rule.L1.size());
+        for(Cluster c : rule.L1) {
+        	System.out.println(c.terms.get(0) + " support " + c.support);
+        }
     }
 
     public static Wordnet getWordnet(){

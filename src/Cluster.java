@@ -1,9 +1,15 @@
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Cluster {
+public class Cluster implements Comparator<Cluster> {
     public ArrayList<String> terms;
-
-    public Cluster(){
+    public double support;
+    public Set<DocumentTermFrequency> docs; 
+    
+    public Cluster() {
         terms = new ArrayList<>();
     }
 
@@ -16,7 +22,18 @@ public class Cluster {
         terms.add(str);
     }
 
-
+    public Cluster(ArrayList<String> terms, double support) {
+    	this.terms = terms;
+    	this.support = support; 
+    }
+    
+    public void updateClusterDocuments(HashMap<String, WordInfo> wordsVector) {
+		docs = new HashSet<>(wordsVector.get(terms.get(0)).docs);
+		for(int i = 1; i < terms.size(); i++) {
+			docs.retainAll(wordsVector.get(terms.get(i)).docs);
+		}
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -33,4 +50,9 @@ public class Cluster {
     public int hashCode() {
         return terms.hashCode();
     }
+
+	@Override
+	public int compare(Cluster o1, Cluster o2) {
+		return o1.terms.get(0).compareTo(o2.terms.get(0));
+	}
 }
