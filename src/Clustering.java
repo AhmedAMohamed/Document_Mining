@@ -4,11 +4,11 @@ import java.util.HashMap;
 import Jama.Matrix;
 
 public class Clustering {
-
 		
 	ArrayList<DocumentTermFrequency> documents;
 	HashMap<String,WordInfo> wordsVector;
-	ArrayList<Cluster> candidateClusters;
+	ArrayList<ArrayList<Cluster>> candidateClusters;
+	
 	
 	public static Matrix dtm;
 	public static Matrix tdm;
@@ -35,10 +35,8 @@ public class Clustering {
 	
 	public double calculateScore(Cluster cluster) {
 		double score = 0;
-		for(DocumentTermFrequency d : cluster.docs) {
-			for(String word : wordsVector.keySet()) {
-				score += d.getFuzzyValue(word, d.getWordMaxFuzzyValue(word));
-			}
+		for(DocumentTermFrequency doc : cluster.docs) {
+			
 		}
 		return score;
 	}
@@ -48,10 +46,12 @@ public class Clustering {
 		int i = 0;
 		for(String word : wordsVector.keySet()) {
 			int j = 0;
+			/*
 			for(Cluster c : candidateClusters) {
 				tdm[i][j] = calculateScore(c)/wordsVector.get(word).maxFuzzyValue;
 				j++;
 			}
+			*/
 			i++;
 		}
 		this.tdm = new Matrix(tdm);

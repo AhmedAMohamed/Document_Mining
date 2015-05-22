@@ -39,7 +39,16 @@ public class Wordnet {
 
     public  ArrayList<String> getHypernyms (String _word) {
         // get the synset
-        IIndexWord idxWord = dict .getIndexWord(_word , POS. NOUN ) ;
+    	IIndexWord idxWord = null ;
+    	try  {
+    		idxWord = dict .getIndexWord(_word , POS. NOUN );
+    	}
+    	catch(Exception e)
+    	{
+    		System.out.println(_word);
+    		throw new NullPointerException();
+    	}
+        
         if(idxWord == null)
         {
             return new ArrayList<>();

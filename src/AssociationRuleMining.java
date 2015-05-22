@@ -7,13 +7,12 @@ public class AssociationRuleMining {
 
 	public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
-    public static Membership memFunctions;
-    public ArrayList<Cluster> l1;
+    public ArrayList<Cluster> L1;
     
     public AssociationRuleMining(ArrayList<DocumentTermFrequency> documents, HashMap<String, WordInfo> wordsVector) {
 		this.documents = documents;
 		this.wordsVector = wordsVector;
-		l1 = new ArrayList<>();
+		L1 = new ArrayList<>();
 	}
     
     public void getL1(double support) {
@@ -21,63 +20,63 @@ public class AssociationRuleMining {
     	for(DocumentTermFrequency d : documents) {
     		for(String word : wordsVector.keySet()) {
     			WordInfo w = wordsVector.get(word);
-    			@SuppressWarnings("static-access")
-				double l = memFunctions.low(d.getWordFreq(word), w.minFreq, w.average, w.maxFreq);
-    			@SuppressWarnings("static-access")
-				double m = memFunctions.mid(d.getWordFreq(word), w.minFreq, w.average, w.maxFreq);
-    			@SuppressWarnings("static-access")
-				double h = memFunctions.high(d.getWordFreq(word), w.minFreq, w.average, w.maxFreq);
+    			//step 1
+				double l = Membership.low(d.getWordFreq(word), w.minFreq, w.average, w.maxFreq);
+				double m = Membership.mid(d.getWordFreq(word), w.minFreq, w.average, w.maxFreq);
+				double h = Membership.high(d.getWordFreq(word), w.minFreq, w.average, w.maxFreq);
     			d.setFuzzyValue(word, l, m, h);
+    			
+    			//step 2
+    			w.count[FuzzyState.LOW.getId()] += l;
+    			w.count[FuzzyState.MEDIUM.getId()] += m;
+    			w.count[FuzzyState.HIGH.getId()] += h;
+    			
     		}
     	}
     	
-    	// step two
-    	for(String word : wordsVector.keySet()) {
-    		for(DocumentTermFrequency d : documents) {
-    			wordsVector.get(word).count[FuzzyState.LOW.getId()] += d.getFuzzyValue(word, FuzzyState.LOW);
-    			wordsVector.get(word).count[FuzzyState.MEDIUM.getId()] += d.getFuzzyValue(word, FuzzyState.MEDIUM);
-    			wordsVector.get(word).count[FuzzyState.HIGH.getId()] += d.getFuzzyValue(word, FuzzyState.HIGH);
-    		}
-    	}
     	
     	// step three
     	for(String word : wordsVector.keySet()) {
-    		double l = wordsVector.get(word).count[FuzzyState.LOW.getId()];
-    		double m = wordsVector.get(word).count[FuzzyState.MEDIUM.getId()];
-    		double h = wordsVector.get(word).count[FuzzyState.HIGH.getId()];
+    		WordInfo w = wordsVector.get(word);
+    		double low = w.count[FuzzyState.LOW.getId()];
+    		double medium = w.count[FuzzyState.MEDIUM.getId()];
+    		double high = w.count[FuzzyState.HIGH.getId()];
     		
-    		if(l >= m && l >= h) {
-    			wordsVector.get(word).maxFuzzyVarriable = FuzzyState.LOW;
-    			wordsVector.get(word).maxFuzzyValue = l;
+    		if(low >= medium && low >= high) {
+    			w.maxFuzzyVarriable = FuzzyState.LOW;
+    			w.maxFuzzyValue = low;
     			
-    			if(l/documents.size() > support) {
+    			// step 4
+    			if(low/documents.size() > support) {
     				ArrayList<String> terms = new ArrayList<>();
     				terms.add(word);
-    				l1.add(new Cluster(terms, l/documents.size()));
+    				L1.add(new Cluster(terms, low/documents.size()));
     			}
     			
     		}
-    		else if(m >= l && m >= h) {
-    			wordsVector.get(word).maxFuzzyVarriable = FuzzyState.MEDIUM;
-    			wordsVector.get(word).maxFuzzyValue = m;
+    		else if(medium >= low && medium >= high) {
+    			w.maxFuzzyVarriable = FuzzyState.MEDIUM;
+    			w.maxFuzzyValue = medium;
     			
-    			if(m/documents.size() > support) {
+    			// step 4
+    			if(medium/documents.size() > support) {
     				ArrayList<String> terms = new ArrayList<>();
     				terms.add(word);
-    				l1.add(new Cluster(terms, m/documents.size()));
+    				L1.add(new Cluster(terms, medium/documents.size()));
     			}
     		}
     		else {
-    			wordsVector.get(word).maxFuzzyVarriable = FuzzyState.HIGH;
-    			wordsVector.get(word).maxFuzzyValue = h;
+    			w.maxFuzzyVarriable = FuzzyState.HIGH;
+    			w.maxFuzzyValue = high;
     			
-    			if(h/documents.size() > support) {
+    			// step 4
+    			if(high/documents.size() > support) {
     				ArrayList<String> terms = new ArrayList<>();
     				terms.add(word);
-    				l1.add(new Cluster(terms, h/documents.size()));
+    				L1.add(new Cluster(terms, high/documents.size()));
     			}
     		}
-    		Collections.sort(l1, new Cluster());
+    		Collections.sort(L1, new Cluster());
     	}
     }
     

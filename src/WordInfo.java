@@ -83,9 +83,4 @@ public class WordInfo {
         average /= K;
         return (freq != 0);
     }
-    
-    public HashSet<DocumentTermFrequency> getDocuments() {
-    	
-    	return null;
-    }
 }

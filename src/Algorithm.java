@@ -8,16 +8,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by karim on 5/19/15.
- */
+
 public class Algorithm {
     public static String documentDirectory = "classic";
-    public static double tfidfThreshold = 0.99;
-    public static int hypernymCount = 5;
+    public static double tfidfThreshold = 0.8;
+    public static int hypernymCount = 3;
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
-    public static double minSuport = 0.7;
+    public static double minSuport = 0.25;
     private static Wordnet wordnet;
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
 
@@ -32,7 +30,7 @@ public class Algorithm {
         //close wordnet
         wordnet.close();
 
-        Preprocess.saveToFile();
+        //Preprocess.saveToFile();
 
         int count = 0;
         //update minmax + check if any word is empty in all documents
@@ -43,15 +41,16 @@ public class Algorithm {
 
         System.out.println("Total: " + (System.currentTimeMillis() - start) / 1000f + " seconds");
         System.out.println("Count of Failures: " + count);
+
         
-        Set<String> w = wordsVector.keySet();
-        String[] q = w.toArray(new String[w.size()]);;
-        HashSet<DocumentTermFrequency> e = wordsVector.get(q[0]).docs;
-        for(DocumentTermFrequency r : e) {
-        	System.out.println(r.getName());
+        AssociationRuleMining rule = new AssociationRuleMining(documents, wordsVector);
+        rule.getL1(minSuport);
+        System.out.println("finished");
+        System.out.println();
+        System.out.println(rule.L1.size());
+        for(Cluster c : rule.L1) {
+        	System.out.println(c.terms.get(0) + " support " + c.support);
         }
-
-
     }
     
 
