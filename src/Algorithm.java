@@ -11,6 +11,7 @@ public class Algorithm {
     public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
     public static double minSup = 0.20;
+    public static double minInterSim = 0.5;
     private static Wordnet wordnet;
     public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
 

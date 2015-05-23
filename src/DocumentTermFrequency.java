@@ -2,6 +2,7 @@ import java.util.HashMap;
 
 public class DocumentTermFrequency {
 	
+	int dcmIndex = 0;
 	private class Info {
 		public int freq;
 		public double[] fuzzyValues;

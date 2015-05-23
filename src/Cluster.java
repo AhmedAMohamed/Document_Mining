@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Cluster implements Comparator<Cluster> {
-    public ArrayList<String> terms;
+    int dcmIndex = 0;
+	public ArrayList<String> terms;
     public double support;
     public Set<DocumentTermFrequency> docs; 
     public double totalWMax;
