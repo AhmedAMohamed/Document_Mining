@@ -1,11 +1,9 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Cluster implements Comparator<Cluster> {
     public ArrayList<String> terms;
+    private int sizeSinceLastHash = 0;
+    private int hash = -1;
     public double support;
     public Set<DocumentTermFrequency> docs; 
     
@@ -48,7 +46,19 @@ public class Cluster implements Comparator<Cluster> {
 
     @Override
     public int hashCode() {
-        return terms.hashCode();
+        //recompute hash when changed
+        if(sizeSinceLastHash != terms.size())
+        {
+            sizeSinceLastHash = terms.size();
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i < terms.size(); i++)
+            {
+                builder.append(terms.get(i));
+            }
+            hash = builder.toString().hashCode();
+        }
+
+        return hash;
     }
 
 	@Override

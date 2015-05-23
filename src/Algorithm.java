@@ -12,7 +12,7 @@ public class Algorithm {
     public static HashMap<String, WordInfo> wordsVector;
     public static double minSup = 0.25;
     private static Wordnet wordnet;
-    public static String mainDirectory = "C:\\Users\\AhmedA\\Desktop\\Data_mining_project\\";
+    public static String mainDirectory = "";
 
 
     public static void main(String[] args) throws IOException {

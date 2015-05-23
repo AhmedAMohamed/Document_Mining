@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -28,8 +29,52 @@ public class Apriori {
             output.add(generateNextL(candidates, docs, wordsVector));
         }
 
+        pruneOnConfident(output);
 
         return output;
+    }
+
+    private static void pruneOnConfident(ArrayList<ArrayList<Cluster>> output) {
+
+        //holds cluster passed confidence
+        ArrayList<Cluster> last = new ArrayList<>();
+
+        //generate hash for fast retrieval
+        HashMap<Integer, Double> history = new HashMap<>();
+        for(int i = 0; i < output.size(); i++)
+        {
+            ArrayList<Cluster> level = output.get(i);
+            for(Cluster c :level)
+            {
+                history.put(c.hashCode(),c.support);
+            }
+        }
+
+        //calculate rules
+        //iterate over all levels >= 2
+        for(int i = 1; i < output.size();i++)
+        {
+            ArrayList<Cluster> level = output.get(i);
+            for (Cluster c : level)
+            {
+                //holds
+
+                for(int j = 0; j < c.terms.size(); j++)
+                {
+
+                    StringBuilder builder  = new StringBuilder();
+                    for(int s = 0; s < c.terms.size(); s++)
+                    {
+                        if(s != j)
+                            builder
+                    }
+                }
+
+            }
+
+
+        }
+
     }
 
     private static ArrayList<Cluster> generateNextL(ArrayList<Cluster> candidates, ArrayList<DocumentTermFrequency> docs,
@@ -40,7 +85,7 @@ public class Apriori {
         {
             double w = 0;
 
-            //eextract fuzzy support of cluser from documents
+            //extract fuzzy support of cluser from documents
             for(DocumentTermFrequency d : docs)
             {
                 double min = Double.MAX_VALUE;
@@ -52,18 +97,13 @@ public class Apriori {
                 }
                 w += min;
             }
-
+            c.support = w;
             //if fuzzy support is greater than minsup then add it and continue
             if((w/ docs.size()) >= Algorithm.minSup)
             {
                 nextL.add(c);
             }
-
-
-
         }
-
-
         return nextL;
     }
 
@@ -122,7 +162,9 @@ public class Apriori {
         return new Cluster(joined);
 
     }
-
+    //abcdef
+    //r: ab
+    //   ac
     static boolean combinations(HashSet<Cluster> seen,
                         Cluster arr, int len, int startPosition, Cluster result){
         if (len == 0){
