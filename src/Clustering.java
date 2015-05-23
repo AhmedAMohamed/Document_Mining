@@ -7,7 +7,7 @@ public class Clustering {
 		
 	ArrayList<DocumentTermFrequency> documents;
 	HashMap<String,WordInfo> wordsVector;
-	ArrayList<Cluster> candidateClusters;
+	ArrayList<Cluster> clusters;
 	
 	public static Matrix dtm;
 	public static Matrix tdm;
@@ -16,7 +16,7 @@ public class Clustering {
 	public Clustering(HashMap<String, WordInfo> wordsVector, ArrayList<DocumentTermFrequency> documents, ArrayList<Cluster> candidateClusters) {
 		this.documents = documents;
 		this.wordsVector = wordsVector;
-		this.candidateClusters = candidateClusters;
+		this.clusters = candidateClusters;
 	}
 	
 	public void constructDTM() {
@@ -44,20 +44,19 @@ public class Clustering {
 	}
 	
 	public void constructTDM() {
-		double[][] tdm = new double[wordsVector.size()][candidateClusters.size()];
+		double[][] tdm = new double[wordsVector.size()][clusters.size()];
 
 		int j = 0;
 		double totalMaxW = calculateTotalMaxW();
 		for(int i = 0; i < tdm.length; i++) {
 			j = 0;
-			for(Cluster c : candidateClusters) {
+			for(Cluster c : clusters) {
 				tdm[i][j] = calculateScore(c) / totalMaxW; 
 				j++;
 			}
 		}
 		this.tdm = new Matrix(tdm);
 	}
-
 	
 	private double calculateTotalMaxW() {
 		double max = 0;
@@ -72,4 +71,34 @@ public class Clustering {
 	public void calculateDcm() {
 		dcm = dtm.times(tdm);
 	}
+
+	public void generateClusters() {
+		double[][] dcm = this.dcm.getArray();
+		int i = 0;
+		for(DocumentTermFrequency d : documents) {
+			int j = 0;
+			double max = Double.MIN_VALUE;
+			for(Cluster c : clusters) {
+				if(dcm[i][j] > max) {
+					max = dcm[i][j];
+				}
+			}
+			Cluster c = getMaxCluster(max, clusters,dcm[i]);
+			for(Cluster c2 : clusters) {
+				if(c != c2) {
+					c2.docs.remove(d);
+				}
+			}
+		}
+	}
+
+	private Cluster getMaxCluster(double max,ArrayList<Cluster> candidateClusters2, double[] dcm) {
+		for(int i = 0; i < dcm.length; i++) {
+			if(dcm[i] == max) {
+				return candidateClusters2.get(i);
+			}
+		}
+		return null;
+	}
+
 }
