@@ -39,9 +39,16 @@ public class Algorithm {
         System.out.println("Count of Failures: " + count);
 
         AssociationRuleMining rule = new AssociationRuleMining(documents, wordsVector);
-        
+        long sTime = System.currentTimeMillis();
         rule.getL1(minSup);
+        long tTime = System.currentTimeMillis();
+        System.out.println("time to get L1 clusters: " + (tTime - sTime)/1000.0);
+        
+        sTime = System.currentTimeMillis();
         ArrayList<ArrayList<Cluster>> q = Apriori.getFrequentItemsets(rule.L1, documents, wordsVector);
+        tTime = System.currentTimeMillis();
+        
+        System.out.println("time to apirori: " + (tTime - sTime)/1000.0);
         int i = 0;
         for(ArrayList<Cluster> e : q) {
         	i++;
