@@ -40,9 +40,11 @@ public class Clustering {
 	public double calculateScore(Cluster cluster) {
 		double score = 0;
 		for (DocumentTermFrequency doc : cluster.docs) {
-			for (String word : cluster.terms) {
-				score += doc.getFuzzyValue(word,
-						wordsVector.get(word).maxFuzzyVarriable);
+			for (Cluster c : AssociationRuleMining.L1) {
+				for(String word : c.terms) {
+					score += doc.getFuzzyValue(word,
+							wordsVector.get(word).maxFuzzyVarriable);
+				}
 			}
 		}
 		return score;

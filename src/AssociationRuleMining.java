@@ -7,7 +7,7 @@ public class AssociationRuleMining {
 
 	public static ArrayList<DocumentTermFrequency> documents;
     public static HashMap<String, WordInfo> wordsVector;
-    public ArrayList<Cluster> L1;
+    public static ArrayList<Cluster> L1;
     
     public AssociationRuleMining(ArrayList<DocumentTermFrequency> documents, HashMap<String, WordInfo> wordsVector) {
 		this.documents = documents;
