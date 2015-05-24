@@ -122,9 +122,7 @@ public class Membership {
 		
 		if(tf >= c && tf <= d) {
 			return (1 + ((tf - d)/(c - d)));
-		}
-		
+		}	
 		return -1;
-	}
-	
+	}	
 }

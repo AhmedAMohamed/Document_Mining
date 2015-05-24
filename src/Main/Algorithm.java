@@ -22,7 +22,7 @@ public class Algorithm {
     public static double MIN_INTER_SIMILARITY = 0.5;
 
     public static  String DOCUMENT_DIRECTORY = "classic";
-    public static String MAIN_DIRECTORY = System.getProperty("user.dir")+"/";
+    public static String MAIN_DIRECTORY = "C:\\Users\\AhmedA\\Desktop\\Data_mining_Project\\";
 
 
     private static ArrayList<DocumentTermFrequency> documents;
@@ -54,17 +54,33 @@ public class Algorithm {
         {
             wordsVector.get(w).updateMinMaxAvg(w, wordsVector.size());
         }
+        
         ArrayList<Cluster> candidateCluster = FuzzyMining.mineFrequentItemSets(documents, wordsVector);
         Watch.lapStop("fuzzy mining");
 
         // Clustering
         System.out.println("\n\n---------------- Clustering ----------------\n");
         Watch.lapBegin();
-        ArrayList<Cluster> clusters = Clustering.cluster(documents, wordsVector, candidateCluster);
+        for(Cluster c : candidateCluster) {
+        	
+        	c.updateClusterDocuments(wordsVector);
+        	c.calculateScore();
+        }
+
+        Clustering clustering_algo = new Clustering(wordsVector, documents, candidateCluster);
+        clustering_algo.calculateDTM();
+        System.out.println();
+        clustering_algo.constructTDM();
+        clustering_algo.calculateDCM();
+        clustering_algo.generateClusters();
+        clustering_algo.mergeClusters();
+        
+        //ArrayList<Cluster> clusters = Clustering.cluster(documents, wordsVector, candidateCluster);
+        System.out.println(clustering_algo.clusters.size());
         Watch.lapStop("clustering");
 
-
         Watch.stop("running the algorithm");
+        
     }
 
 

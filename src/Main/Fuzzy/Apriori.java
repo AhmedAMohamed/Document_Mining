@@ -14,6 +14,10 @@ import java.util.List;
 class Apriori {
 
     private static HashMap<String, Double> seen =  new HashMap<>();
+    
+    public static HashMap<String, WordInfo> wordsVector;
+    
+    
     /**
      * Apply fuzzy apriori to get candidate clusters of level >= 1
      * @param l1            The L1 candidate clusters
@@ -151,7 +155,7 @@ class Apriori {
         //add last in b
         joined.add(b.getTerm(b.getTermsSize() - 1));
 
-        return new Cluster(joined);
+        return new Cluster(joined, wordsVector);
 
     }
 

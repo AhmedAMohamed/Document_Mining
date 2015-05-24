@@ -24,7 +24,7 @@ public class Wordnet {
         try {
             // create the dictionary
             IRAMDictionary dict = new RAMDictionary(
-                    new File(Algorithm.MAIN_DIRECTORY+"wordnet/dict"),
+                    new File("wordnet/dict"),
                     ILoadPolicy. NO_LOAD ) ;
             // open it
             dict.open();

@@ -3,32 +3,40 @@ package Models;
 import java.util.*;
 
 public class Cluster{
+	
     private List<String> terms;
     private double support;
 
-
-
     private Set<DocumentTermFrequency> docs;
 
+    private int clusterMatricesIndex = 0;
 
-    public Cluster(ArrayList<String> terms){
+    private double score = 0;
+    
+    public HashMap<String, WordInfo> wordsVector;
+
+    public Cluster(ArrayList<String> terms, HashMap<String, WordInfo> wordsVector){
         this.terms = terms;
+        this.wordsVector = wordsVector;
     }
 
-    public Cluster(String str){
+    public Cluster(String str, HashMap<String, WordInfo> wordsVector){
         terms = new ArrayList<>(1);
         terms.add(str);
+        this.wordsVector = wordsVector;
     }
 
-    public Cluster(String str, double support){
+    public Cluster(String str, double support, HashMap<String, WordInfo> wordsVector){
         terms = new ArrayList<>(1);
         terms.add(str);
         this.support = support;
+        this.wordsVector = wordsVector;
     }
 
-    public Cluster(ArrayList<String> terms, double support) {
+    public Cluster(ArrayList<String> terms, double support, HashMap<String, WordInfo> wordsVector) {
     	this.terms = terms;
     	this.support = support; 
+    	this.wordsVector = wordsVector;
     }
 
     /**
@@ -87,6 +95,32 @@ public class Cluster{
     }
 
     /**
+     * Get the cluster matrix index
+     * 
+     * @return the index of the cluster in cluster matrix DCM
+     */
+    public int getClusterMatrixIndex() {
+    	return clusterMatricesIndex;
+    }
+    
+    /**
+     * Get the score value of this cluster
+     * @return score value for this cluster
+     */
+    public double getScore() {
+    	return this.score;
+    }
+    
+    /**
+     * Set Cluster matrix index
+     * 
+     * @param index of the cluster in the DCM
+     */
+    public void setClusterMatrixIndex(int index) {
+    	this.clusterMatricesIndex = index;
+    }
+    
+    /**
      * Set the cluster importance value
      * @param support   the support
      */
@@ -102,5 +136,15 @@ public class Cluster{
     public Set<DocumentTermFrequency> getDocs() {
         return docs;
     }
-
+    /**
+     * Calculate score functions of this cluster
+     */
+    public void calculateScore() {
+		for (DocumentTermFrequency doc : this.getDocs()) {
+			for (String word : this.getTerms()) {
+				score += doc.getFuzzyValue(word, wordsVector.get(word)
+						.getMaxSummedFuzzyVariable());
+			}
+		}
+	}
 }
