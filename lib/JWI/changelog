@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  * This program and the accompanying materials are made available under the 
- * terms of the MIT Java Wordnet Interface License which accompanies this 
+ * terms of the MIT Java Models.Wordnet Interface License which accompanies this
  * distribution.  Please check the attached license for more details.
  *
  * To communicate praise, suggestions, constructive criticism, or feature
@@ -37,7 +37,7 @@ Ver     : Release Date  : Changes
 ---------------------------------- 
 2.2.4   : Apr 13, 2013  : 1. Fixed Bug 017; added relevant FAQ
                           2. Fixed Bug 018; tested on 3.0 database-only version; added relevant FAQ
-                          3. Tested JWI on Wordnet 3.1; added Version.ver31 field 
+                          3. Tested JWI on Models.Wordnet 3.1; added Version.ver31 field
 ----------------------------------        
 2.2.3   : Feb 25, 2012  : 1. Fixed Bug 015
 ----------------------------------
@@ -66,13 +66,13 @@ Ver     : Release Date  : Changes
 ----------------------------------
 2.1.5   : Dec 19, 2008  : 1. Added documentation that points from the ISenseKey interface to SenseKeyParser class
                           2. Fixed Bug 011 (WordnetStemmer.findStems(String, POS))
-                          3. Make explicit that Dictionary class does no stemming, unlike Wordnet API
+                          3. Make explicit that Dictionary class does no stemming, unlike Models.Wordnet API
                           4. Iterator returned by IDictionary.getExceptionEntryIterator(POS) now returns IExceptionEntry objects
                           5. Added catch and warning for linefeed corrupted data files
 ---------------------------------
 2.1.4   : Sep 11, 2008  : 1. Moved SenseKey.parseKey(String) to its own class, SenseKeyParser, for ease of modification
                           2. Replaced call to SenseKey.parseKey(String) in SenseLineParser with call to SenseKeyParser.parseLine(String)
-                          3. Added UnknownLexFile class to allow support of Wordnet mods (such as Rion Snow's) that use non-standard lexical file numbers
+                          3. Added UnknownLexFile class to allow support of Models.Wordnet mods (such as Rion Snow's) that use non-standard lexical file numbers
                           4. Modified SenseKeyParser and DataLineParser so they use UnknownLexFile class rather than throw NullPointerException on non-standard lexical file
                           5. Fixed Bug 010 (Dictionary.getExceptionEntry(IExceptionEntryID) method)
                           6. Replaced Pattern.quote(String) in Version class with string concatenation with \Q and \E for compatibility with GCJ 4.2
@@ -100,7 +100,7 @@ Ver     : Release Date  : Changes
 ---------------------------------
 2.1.1 : Jan 26, 2008    : 1. Fixed Bug 008 (SynsetID.hashCode() method)
 ---------------------------------
-2.1.0 : Jan 24, 2008    : 1. Confirmed compatibility with Wordnet 1.6, 1.7 and 1.7.1
+2.1.0 : Jan 24, 2008    : 1. Confirmed compatibility with Models.Wordnet 1.6, 1.7 and 1.7.1
                           2. Added access to index.sense file via sense entry class and interfaces
                           3. Added AdjMarker enum; IWord.getAdjectiveMarker() now returns an instance of this class
                           4. Fixed parsing code for ISynset.isAdjectiveHead()
@@ -115,9 +115,9 @@ Ver     : Release Date  : Changes
                           12. Added ILexFile interface, LexFile class
                           13. Changed ISynset.getLexicalFileNum() to ISynset.getLexicalFile, which returns an ILexFile object
                           14. Removed IDataProvider.iterator() method (redundant; call getSources().iterator() instead)
-                          15. Dictionary now automatically detects the version of Wordnet being used
+                          15. Dictionary now automatically detects the version of Models.Wordnet being used
 ---------------------------------
-2.0.0 : Jan 8, 2008     : 1. Confirmed compatibility with Wordnet 2.0
+2.0.0 : Jan 8, 2008     : 1. Confirmed compatibility with Models.Wordnet 2.0
                           2. Improved use of parameterized types throughout
                           3. Elimination of arrays as return values in favor of unmodifiable lists throughout
                           4. Condensed the edu.mit.jwi.data and .content packages into one
@@ -205,8 +205,8 @@ Ver     : Release Date  : Changes
                               g) Added IClassCache, IClassCacheIDAware interfaces
                               h) Renamed IDAwareCache to ClassCacheIDAware, separated out ClassCache implementation
                               i) ClassCacheIDAware now implements IClassCacheIDAware
-                          5. Added feature 003 (Wordnet 3.0 support)
-                              a) Tested JWI with Wordnet 3.0 UNIX files
+                          5. Added feature 003 (Models.Wordnet 3.0 support)
+                              a) Tested JWI with Models.Wordnet 3.0 UNIX files
                           6. Added feature 007 (more informative error messages on open() failure)
                               a) IDataProvider: Added 'throws IOException' to open() method
                               b) Added DataProviderNotOpenException class
@@ -232,8 +232,8 @@ ID  : Priority : Reported  : Fixed in Ver : Description
 014 : High     : 02 Nov 11 : 2.2.2  : Repeat of Bug 013 but for adjectives (reported by Z. Wang)
 013 : High     : 14 Jun 11 : 2.2.1  : SimpleStemmer erroneously looks for suffixes other than at end of a word; this was introduced in the 2.2.0 code cleanup (reported by R. Purpuly)
 012 : Low      : 12 Aug 09 : 2.2.0  : FileProvider does not dispose file handles immediately when close() is called (reported by R. Menendez) 
-011 : Medium   : 15 Dec 08 : 2.1.5  : WordnetStemmer does not continue stemming when surface form is in Wordnet, e.g., "operations" does not return "operation" (reported by I. Dourado)
-010 : Medium   : 04 Jun 08 : 2.1.4  : NullPointerException when exception files are not in Wordnet directory (reported by C. Zamudio)
+011 : Medium   : 15 Dec 08 : 2.1.5  : WordnetStemmer does not continue stemming when surface form is in Models.Wordnet, e.g., "operations" does not return "operation" (reported by I. Dourado)
+010 : Medium   : 04 Jun 08 : 2.1.4  : NullPointerException when exception files are not in Models.Wordnet directory (reported by C. Zamudio)
 009 : High     : 18 Mar 08 : 2.1.3  : Error in BinarySearchWordnetFile.BinarySearchLineIterator.findFirstLine() that caused a NullPointerException when the search key is lexiographically past the last line in the file (Reported by M. Barczynski)
 008 : Medium   : 26 Jan 08 : 2.1.1  : Error in SynsetID.hashCode() function that results in all hash codes for id's with same pos to be the same (reported by L. Mazuel)
 007 : High     : 09 Aug 07 : 1.1.3  : Minor error in binary search algorithm which defaults to last line under some conditions (reported by C. Rhee)
@@ -249,7 +249,7 @@ ID  : ETA      : Requested : Added in Ver : Description
 =======================================================
 014 : Jun 2013 : 08 Jun 13 : 2.2.5  : IItemID implements Serializable
 013 : Dec 2009 : 12 Aug 09 : 2.2.0  : In-memory Dictionary
-012 : ???      : 08 Jan 08 :        : Command-line access to Wordnet
+012 : ???      : 08 Jan 08 :        : Command-line access to Models.Wordnet
 011 : ???      : 08 Jan 08 :        : Access to additional verb frames in sentidx.vrb and sents.vrb
 010 : ???      : 08 Jan 08 :        : Option to load verb frames on startup
 009 : Dec 2007 : 01 Jul 07 : 2.0.0  : Add getRelatedMap() method to IWord and ISynset interfaces
@@ -258,6 +258,6 @@ ID  : ETA      : Requested : Added in Ver : Description
 006 : Jan 2008 : 23 Apr 07 : 1.0.0  : JUnit test suite for development purposes (not included in regular distribution)
 005 : Never    : 23 Apr 07 : -      : Simple word-sense disambiguation
 004 : Jan 2008 : 23 Apr 07 : 2.1.0  : Access to sense count files
-003 : May 2007 : 23 Apr 07 : 1.1.0  : Support for Wordnet 3.0
+003 : May 2007 : 23 Apr 07 : 1.1.0  : Support for Models.Wordnet 3.0
 002 : ???      : 23 Apr 07 :        : Internationalized error messages
-001 : Never    : 23 Apr 07 : -      : Non-English Wordnet support (I'm monolingual, so someone else has to do it)
+001 : Never    : 23 Apr 07 : -      : Non-English Models.Wordnet support (I'm monolingual, so someone else has to do it)

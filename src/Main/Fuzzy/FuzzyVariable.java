@@ -1,5 +1,6 @@
+package Main.Fuzzy;
 
-public enum FuzzyState {
+public enum FuzzyVariable {
 	NONE(-1),
 	LOW(0),
 	MEDIUM(1),
@@ -7,7 +8,7 @@ public enum FuzzyState {
 	
 	
 	private int id;
-	FuzzyState(int id) {
+	FuzzyVariable(int id) {
 		this.id = id ;
 	}
 	

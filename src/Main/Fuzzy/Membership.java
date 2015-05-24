@@ -1,10 +1,12 @@
+package Main.Fuzzy;
 
 public class Membership {
 
 	
 	/**
-	 * this function is to convert the term frequency to a fuzzy variable 
-	 * the returned value is the term importance to this variable
+	 * This function is to convert the term frequency to a fuzzy variable
+	 * the returned value is the term importance to this variable.
+     *
 	 * @param tf term frequency
 	 * @param min minimum value of a word
 	 * @param average calculated in previous state
@@ -42,8 +44,9 @@ public class Membership {
 	}
 	
 	/**
-	 * this function is to convert the term frequency to a fuzzy variable mid 
-	 * the returned value is the term importance to this variable
+	 * This function is to convert the term frequency to a fuzzy variable mid
+	 * the returned value is the term importance to this variable.
+     *
 	 * @param tf term frequency
 	 * @param min minimum value of a word
 	 * @param average calculated in previous state
@@ -85,8 +88,9 @@ public class Membership {
 	}
 	
 	/**
-	 * this function is to convert the term frequency to a fuzzy variable high 
-	 * the returned value is the term importance to this variable
+	 * This function is to convert the term frequency to a fuzzy variable high
+	 * the returned value is the term importance to this variable.
+     *
 	 * @param tf term frequency
 	 * @param min minimum value of a word
 	 * @param average calculated in previous state
