@@ -72,6 +72,9 @@ public class Algorithm {
         Watch.stop("running the algorithm");
         
         System.out.println(clusters.size());
+        for(Cluster c : clusters) {
+        	System.out.println(c.getDocs().size());
+        }
     }
 
 

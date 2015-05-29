@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class View {
+public class View extends JFrame{
 	private JFrame frame;
 	private Controller controller;
 

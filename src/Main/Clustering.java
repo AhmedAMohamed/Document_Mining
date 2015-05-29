@@ -1,5 +1,6 @@
 package Main;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,6 +66,15 @@ public class Clustering {
 
 	public static void calculateDCM() {
 		dcm = dtm.times(tdm);
+		double[][] d = dcm.getArray();
+		DecimalFormat df = new DecimalFormat("#.00");
+		
+		for(double[] row : d) {
+			for(double val : row) {
+				System.out.printf(df.format(val) + " ");
+			}
+			System.out.println();
+		}
 	}
 
 	public static void generateClusters(
@@ -93,12 +103,18 @@ public class Clustering {
 
 	public static void mergeClusters() {
 		// merging step 1
-		for (int i = 0; i < clusters.size(); i++) {
-			if (clusters.get(i).getDocs().size() == 0 || clusters == null) {
-				clusters.remove(clusters.get(i));
+		System.out.println("number of clusters before: " + clusters.size());
+		Iterator<Cluster> itr = clusters.iterator();
+		while(itr.hasNext()) {
+			if(itr.next().getDocs().size() > 0) {
+				
+			}
+			else {
+				
+				System.out.println("one removed");
+				itr.remove();
 			}
 		}
-
 		/*
 		 * // merging step 2 ArrayList<ArrayList<Double>> interSim = new
 		 * ArrayList<>();
@@ -189,13 +205,13 @@ public class Clustering {
 		Clustering.clusters = candidateCluster;
 		
 		for(Cluster c : clusters) {
-        	
         	c.updateClusterDocuments(wordsVector);
         	c.calculateScore(wordsVector);
         }
 		Clustering.calculateDTM(documents, wordsVector);
 		Clustering.constructTDM(documents, wordsVector);
 		Clustering.calculateDCM();
+		System.exit(0);
 		Clustering.generateClusters(documents);
 		Clustering.mergeClusters();
 		
