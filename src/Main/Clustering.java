@@ -66,15 +66,14 @@ public class Clustering {
 
 	public static void calculateDCM() {
 		dcm = dtm.times(tdm);
-		double[][] d = dcm.getArray();
+		/*double[][] d = dcm.getArray();
 		DecimalFormat df = new DecimalFormat("#.00");
-		
 		for(double[] row : d) {
 			for(double val : row) {
 				System.out.printf(df.format(val) + " ");
 			}
 			System.out.println();
-		}
+		}*/
 	}
 
 	public static void generateClusters(
@@ -211,7 +210,6 @@ public class Clustering {
 		Clustering.calculateDTM(documents, wordsVector);
 		Clustering.constructTDM(documents, wordsVector);
 		Clustering.calculateDCM();
-		System.exit(0);
 		Clustering.generateClusters(documents);
 		Clustering.mergeClusters();
 		
