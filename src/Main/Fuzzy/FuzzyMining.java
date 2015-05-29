@@ -39,10 +39,11 @@ public class FuzzyMining {
 		calculateFuzzyVariables();
 		Watch.lapStop("calculating fuzzy variables");
 
+		
 		// L1 candidate clusters generation
 		Watch.lapBegin();
 		ArrayList<Cluster> l1_candidate_clusters = calculateMaxFuzzyVariableAndL1();
-		
+
 		Watch.lapStop("calculating L1 and max fuzzy variable");
 
 		// Apriori
@@ -61,7 +62,6 @@ public class FuzzyMining {
 		}
 		Watch.lapStop("apriori");
 
-		
 		return candidate_clusters;
 	}
 
@@ -105,8 +105,10 @@ public class FuzzyMining {
 		ArrayList<Cluster> l1_candidate_clusters = new ArrayList<>();
 		FuzzyVariable[] variables = { FuzzyVariable.LOW, FuzzyVariable.MEDIUM,
 				FuzzyVariable.HIGH };
+
 		
-		Iterator<Map.Entry<String, WordInfo>> wordIterator = wordsVector.entrySet().iterator();
+		Iterator<Map.Entry<String, WordInfo>> wordIterator = wordsVector
+				.entrySet().iterator();
 		while (wordIterator.hasNext()) {
 			String word = wordIterator.next().getKey();
 			WordInfo w = wordsVector.get(word);
@@ -128,15 +130,11 @@ public class FuzzyMining {
 			// check if we should add to l1
 			double support = max_value / documents.size();
 			if (support > Algorithm.MIN_SUPPORT) {
-				l1_candidate_clusters.add(new Cluster(word, support, wordsVector));
+				l1_candidate_clusters.add(new Cluster(word, support));
+			} else {
+				wordIterator.remove();
 			}
-			else {
-				wordsVector.remove(wordIterator);
-			}
-
 		}
-
 		return l1_candidate_clusters;
 	}
-
 }

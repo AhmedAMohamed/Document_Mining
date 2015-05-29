@@ -7,9 +7,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Created by karim on 4/30/15.
- */
 public class View {
 	private JFrame frame;
 	private Controller controller;

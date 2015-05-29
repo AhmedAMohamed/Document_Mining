@@ -155,7 +155,7 @@ class Apriori {
         //add last in b
         joined.add(b.getTerm(b.getTermsSize() - 1));
 
-        return new Cluster(joined, wordsVector);
+        return new Cluster(joined);
 
     }
 

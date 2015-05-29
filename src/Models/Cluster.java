@@ -13,30 +13,25 @@ public class Cluster{
 
     private double score = 0;
     
-    public HashMap<String, WordInfo> wordsVector;
-
-    public Cluster(ArrayList<String> terms, HashMap<String, WordInfo> wordsVector){
+    
+    public Cluster(ArrayList<String> terms){
         this.terms = terms;
-        this.wordsVector = wordsVector;
     }
 
-    public Cluster(String str, HashMap<String, WordInfo> wordsVector){
+    public Cluster(String str){
         terms = new ArrayList<>(1);
         terms.add(str);
-        this.wordsVector = wordsVector;
     }
 
-    public Cluster(String str, double support, HashMap<String, WordInfo> wordsVector){
+    public Cluster(String str, double support){
         terms = new ArrayList<>(1);
         terms.add(str);
         this.support = support;
-        this.wordsVector = wordsVector;
     }
 
-    public Cluster(ArrayList<String> terms, double support, HashMap<String, WordInfo> wordsVector) {
+    public Cluster(ArrayList<String> terms, double support) {
     	this.terms = terms;
-    	this.support = support; 
-    	this.wordsVector = wordsVector;
+    	this.support = support;
     }
 
     /**
@@ -139,7 +134,7 @@ public class Cluster{
     /**
      * Calculate score functions of this cluster
      */
-    public void calculateScore() {
+    public void calculateScore(HashMap<String, WordInfo> wordsVector) {
 		for (DocumentTermFrequency doc : this.getDocs()) {
 			for (String word : this.getTerms()) {
 				score += doc.getFuzzyValue(word, wordsVector.get(word)

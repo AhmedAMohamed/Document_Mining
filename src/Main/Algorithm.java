@@ -58,29 +58,20 @@ public class Algorithm {
         ArrayList<Cluster> candidateCluster = FuzzyMining.mineFrequentItemSets(documents, wordsVector);
         Watch.lapStop("fuzzy mining");
 
+        
+        ////////////////////////
+        System.out.println("word vector size: " + wordsVector.size());
+        System.out.println("Candidae clusters size: " + candidateCluster.size());
+        ///////////////////////
         // Clustering
         System.out.println("\n\n---------------- Clustering ----------------\n");
         Watch.lapBegin();
-        for(Cluster c : candidateCluster) {
-        	
-        	c.updateClusterDocuments(wordsVector);
-        	c.calculateScore();
-        }
-
-        Clustering clustering_algo = new Clustering(wordsVector, documents, candidateCluster);
-        clustering_algo.calculateDTM();
-        System.out.println();
-        clustering_algo.constructTDM();
-        clustering_algo.calculateDCM();
-        clustering_algo.generateClusters();
-        clustering_algo.mergeClusters();
-        
-        //ArrayList<Cluster> clusters = Clustering.cluster(documents, wordsVector, candidateCluster);
-        System.out.println(clustering_algo.clusters.size());
+        ArrayList<Cluster> clusters = Clustering.cluster(documents, wordsVector, candidateCluster);
         Watch.lapStop("clustering");
-
+        
         Watch.stop("running the algorithm");
         
+        System.out.println(clusters.size());
     }
 
 
