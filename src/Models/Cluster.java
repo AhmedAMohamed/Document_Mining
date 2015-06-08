@@ -91,7 +91,7 @@ public class Cluster{
 
     /**
      * Get the cluster matrix index
-     * 
+     *
      * @return the index of the cluster in cluster matrix DCM
      */
     public int getClusterMatrixIndex() {
@@ -108,13 +108,13 @@ public class Cluster{
     
     /**
      * Set Cluster matrix index
-     * 
+     *
      * @param index of the cluster in the DCM
      */
-    public void setClusterMatrixIndex(int index) {
+    public void setClusterMatricesIndex(int index) {
     	this.clusterMatricesIndex = index;
     }
-    
+
     /**
      * Set the cluster importance value
      * @param support   the support

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import Jama.Matrix;
-import Main.Algorithm;
 import Models.Cluster;
 import Models.DocumentTermFrequency;
 import Models.WordInfo;
@@ -24,63 +23,61 @@ public class Clustering {
 		double[][] dtm = new double[documents.size()][wordsVector.size()];
 		int i = 0;
 		for (DocumentTermFrequency d : documents) {
-			int j = 0;
 			for (String word : wordsVector.keySet()) {
-				dtm[i][j] = d.getFuzzyValue(word, wordsVector.get(word)
-						.getMaxSummedFuzzyVariable());
-				d.setClusterMatricesIndex(i);
-				j++;
+                WordInfo wi = wordsVector.get(word);
+				dtm[i][wi.getClusterMatricesIndex()] = d.getFuzzyValue(word, wi
+                        .getMaxSummedFuzzyVariable());
 			}
+            d.setClusterMatricesIndex(i);
 			i++;
 		}
 		Clustering.dtm = new Matrix(dtm);
 	}
 
-	public static void constructTDM(ArrayList<DocumentTermFrequency> documents,
-			HashMap<String, WordInfo> wordsVector) {
+	public static void constructTDM(HashMap<String, WordInfo> wordsVector) {
 
 		double[][] tdm = new double[wordsVector.size()][clusters.size()];
 
-		double totalMaxW = calculateTotalMaxW(documents, wordsVector);
-		for (int i = 0; i < tdm.length; i++) {
+        for (WordInfo wi : wordsVector.values()) {
 			for (int j = 0; j < clusters.size(); j++) {
-				tdm[i][j] = clusters.get(j).getScore() / totalMaxW;
-				clusters.get(j).setClusterMatrixIndex(j);
+				tdm[wi.getClusterMatricesIndex()][j] = clusters.get(j).getScore() /  wi
+                        .getMaxSummedFuzzyValue();
 			}
 		}
 		Clustering.tdm = new Matrix(tdm);
 	}
 
-	private static double calculateTotalMaxW(
-			ArrayList<DocumentTermFrequency> documents,
-			HashMap<String, WordInfo> wordsVector) {
-		double max = 0;
-		for (DocumentTermFrequency doc : documents) {
-			for (String word : wordsVector.keySet()) {
-				max += doc.getFuzzyValue(word, wordsVector.get(word)
-						.getMaxSummedFuzzyVariable());
-			}
-		}
-		return max;
-	}
-
 	public static void calculateDCM() {
 		dcm = dtm.times(tdm);
-		/*double[][] d = dcm.getArray();
+		double[][] d = dcm.getArray();
+
+        boolean notFound = true;
+        int count = 0;
 		DecimalFormat df = new DecimalFormat("#.00");
 		for(double[] row : d) {
 			for(double val : row) {
-				System.out.printf(df.format(val) + " ");
+			    if(val > 0)
+                {
+                    notFound = false;
+                }
 			}
-			System.out.println();
-		}*/
+            if(notFound)
+            {
+                count++;
+            }
+
+		}
+        System.out.println("dcm zeros: " + count);
+        System.out.println();
 	}
 
 	public static void generateClusters(
 			ArrayList<DocumentTermFrequency> documents) {
-		double[][] dcm = Clustering.dcm.getArray();
-		int i = 0;
 
+
+		double[][] dcm = Clustering.dcm.getArray();
+
+        int i = 0;
 		for (DocumentTermFrequency d : documents) {
 
 			double max = Double.MIN_VALUE;
@@ -125,20 +122,6 @@ public class Clustering {
 		 * clusters.get(j), dcm.getArray())); } } } double[] index_value =
 		 * getMaxVal(interSim);
 		 */
-	}
-
-	private Cluster[] getClusters(double d, double e) {
-		Cluster[] mClusters = new Cluster[2];
-		for (Cluster c : clusters) {
-			if (c.getClusterMatrixIndex() == d) {
-				mClusters[0] = c;
-			}
-			if (c.getClusterMatrixIndex() == e) {
-				mClusters[1] = c;
-			}
-		}
-
-		return null;
 	}
 
 	private double[] getMaxVal(ArrayList<ArrayList<Double>> interSim) {
@@ -201,18 +184,36 @@ public class Clustering {
 			HashMap<String, WordInfo> wordsVector,
 			ArrayList<Cluster> candidateCluster) {
 
+
 		Clustering.clusters = candidateCluster;
 		
 		for(Cluster c : clusters) {
         	c.updateClusterDocuments(wordsVector);
         	c.calculateScore(wordsVector);
         }
+
+        //update cluster indexes
+        for(int i = 0; i < clusters.size(); i++)
+        {
+            clusters.get(i).setClusterMatricesIndex(i);
+        }
+
+        //update words indexes
+        int i = 0;
+        for(WordInfo wi : wordsVector.values())
+        {
+            wi.setClusterMatricesIndex(i++);
+
+        }
+
 		Clustering.calculateDTM(documents, wordsVector);
-		Clustering.constructTDM(documents, wordsVector);
+		Clustering.constructTDM(wordsVector);
 		Clustering.calculateDCM();
+
+
 		Clustering.generateClusters(documents);
 		Clustering.mergeClusters();
-		
+
 		return clusters;
 	}
 }

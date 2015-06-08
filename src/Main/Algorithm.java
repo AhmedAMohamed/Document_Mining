@@ -22,7 +22,7 @@ public class Algorithm {
     public static double MIN_INTER_SIMILARITY = 0.5;
 
     public static  String DOCUMENT_DIRECTORY = "classic";
-    public static String MAIN_DIRECTORY = "C:\\Users\\AhmedA\\Desktop\\Data_mining_Project\\";
+    public static String MAIN_DIRECTORY = System.getProperty("user.dir")+"/";
 
 
     private static ArrayList<DocumentTermFrequency> documents;
@@ -68,11 +68,11 @@ public class Algorithm {
         Watch.lapBegin();
         ArrayList<Cluster> clusters = Clustering.cluster(documents, wordsVector, candidateCluster);
         Watch.lapStop("clustering");
-        
+
         Watch.stop("running the algorithm");
-        
+
         System.out.println(clusters.size());
-        for(Cluster c : clusters) {
+        for (Cluster c : clusters) {
         	System.out.println(c.getDocs().size());
         }
     }

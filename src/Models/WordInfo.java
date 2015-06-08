@@ -15,7 +15,7 @@ public class WordInfo {
 
     private FuzzyVariable maxSummedFuzzyVariable;
     private double [] fuzzySummedValues = {0.0,0.0,0.0};
-
+    private int clusterMatricesIndex = 0;
 
     /**
      * Construct a wordinfo object. This object holds lots of information for a word in the data set.
@@ -210,6 +210,30 @@ public class WordInfo {
         return maxSummedFuzzyVariable;
     }
 
+    /**
+     * Get the index used to get the value of this document in the Document-Term &
+     * Document-Cluster Matrices used in clustering stage.
+     *
+     * @see Main.Clustering#calculateDTM
+     * @see Main.Clustering#calculateDCM
+     * @return index in DTM matrix
+     */
+    public int getClusterMatricesIndex(){
+        return clusterMatricesIndex;
+    }
+
+    /**
+     * Set the index used to get the value of this document in the Document-Term &
+     * Document-Cluster Matrices used in clustering stage.
+     *
+     * @param clusterMatricesIndex
+     * @see Main.Clustering#calculateDTM
+     * @see Main.Clustering#calculateDCM
+     */
+    public void setClusterMatricesIndex(int clusterMatricesIndex)
+    {
+        this.clusterMatricesIndex = clusterMatricesIndex;
+    }
 
     /**
      * Gets the value of the maximum summed fuzzy variable.
@@ -242,7 +266,7 @@ public class WordInfo {
      * @param variable     The variable to increment its summed value
      * @param value        Increment value
      *
-     * @see Main.Fuzzy.FuzzyMining#caluclateFuzzyVariables
+     * @see Main.Fuzzy.FuzzyMining#calculateFuzzyVariables
      */
     public void incrementSummedFuzzyValue(FuzzyVariable variable, double value)
     {
