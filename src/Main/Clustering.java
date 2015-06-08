@@ -20,20 +20,42 @@ public class Clustering {
 
 	public static void calculateDTM(ArrayList<DocumentTermFrequency> documents,
 			HashMap<String, WordInfo> wordsVector) {
+
 		double[][] dtm = new double[documents.size()][wordsVector.size()];
-		int i = 0;
-		for (DocumentTermFrequency d : documents) {
+		for (int i = 0; i < documents.size(); i++) {
 			for (String word : wordsVector.keySet()) {
                 WordInfo wi = wordsVector.get(word);
-				dtm[i][wi.getClusterMatricesIndex()] = d.getFuzzyValue(word, wi
+				dtm[i][wi.getClusterMatricesIndex()] = documents.get(i).getFuzzyValue(word, wi
                         .getMaxSummedFuzzyVariable());
 			}
-            d.setClusterMatricesIndex(i);
-			i++;
+            documents.get(i).setClusterMatricesIndex(i);
 		}
+        countZeroRow(dtm, "DTM");
+
 		Clustering.dtm = new Matrix(dtm);
+
+
 	}
 
+    private static void countZeroRow(double [][] arr, String id)
+    {
+        int count = 0;
+        for(double[] row : arr) {
+            boolean notFound = true;
+            for(double val : row) {
+                if(val > 0)
+                {
+                    notFound = false;
+                }
+            }
+            if(notFound)
+            {
+                count++;
+            }
+        }
+        System.out.println(id + " zeros: " + count);
+        System.out.println();
+    }
 	public static void constructTDM(HashMap<String, WordInfo> wordsVector) {
 
 		double[][] tdm = new double[wordsVector.size()][clusters.size()];
@@ -44,31 +66,13 @@ public class Clustering {
                         .getMaxSummedFuzzyValue();
 			}
 		}
+        countZeroRow(tdm, "tdm");
 		Clustering.tdm = new Matrix(tdm);
 	}
 
 	public static void calculateDCM() {
 		dcm = dtm.times(tdm);
-		double[][] d = dcm.getArray();
 
-        boolean notFound = true;
-        int count = 0;
-		DecimalFormat df = new DecimalFormat("#.00");
-		for(double[] row : d) {
-			for(double val : row) {
-			    if(val > 0)
-                {
-                    notFound = false;
-                }
-			}
-            if(notFound)
-            {
-                count++;
-            }
-
-		}
-        System.out.println("dcm zeros: " + count);
-        System.out.println();
 	}
 
 	public static void generateClusters(
@@ -107,7 +111,6 @@ public class Clustering {
 			}
 			else {
 				
-				System.out.println("one removed");
 				itr.remove();
 			}
 		}
@@ -184,6 +187,7 @@ public class Clustering {
 			HashMap<String, WordInfo> wordsVector,
 			ArrayList<Cluster> candidateCluster) {
 
+        System.out.println(documents.size());
 
 		Clustering.clusters = candidateCluster;
 		
