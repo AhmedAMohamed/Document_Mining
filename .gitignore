@@ -5,7 +5,6 @@
 *.zip
 *.rar
 .classpath
-/wordnet
-/classic/
+
 preprocess_output
 preprocess_output.txt
