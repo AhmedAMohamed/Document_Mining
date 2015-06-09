@@ -132,7 +132,7 @@ public class FuzzyMining {
 			if (support > Algorithm.MIN_SUPPORT) {
 				l1_candidate_clusters.add(new Cluster(word, support));
 			} else {
-			//	wordIterator.remove();
+				wordIterator.remove();
 			}
 		}
 		return l1_candidate_clusters;

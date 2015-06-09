@@ -90,7 +90,7 @@ public class Clustering {
 				if (Double.compare(dcm[i][j], max) > 0) {
 					max = dcm[i][j];
 					if(maxCluster != null)
-						maxCluster.getDocs().remove(d);
+						//maxCluster.getDocs().remove(d);
 					maxCluster = clusters.get(j);
 					
 				} else {
