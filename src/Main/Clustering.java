@@ -84,15 +84,15 @@ public class Clustering {
         int i = 0;
 		for (DocumentTermFrequency d : documents) {
 
-			double max = Double.MIN_VALUE;
+			double max = Double.NEGATIVE_INFINITY;
 			Cluster maxCluster = null;
 			for (int j = 0; j < clusters.size(); j++) {
-				if (dcm[i][j] > max) {
+				if (Double.compare(dcm[i][j], max) > 0) {
 					max = dcm[i][j];
-					if (maxCluster != null) {
+					if(maxCluster != null)
 						maxCluster.getDocs().remove(d);
-					}
 					maxCluster = clusters.get(j);
+					
 				} else {
 					clusters.get(j).getDocs().remove(d);
 				}
