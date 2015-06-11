@@ -71,9 +71,12 @@ public class FuzzyMining {
 	 */
 	private static void calculateFuzzyVariables() {
 
+        WordInfo [] words_array = wordsVector.values().toArray(new WordInfo[wordsVector.size()]);
 		for (DocumentTermFrequency d : documents) {
-			for (String word : wordsVector.keySet()) {
-				WordInfo w = wordsVector.get(word);
+            for(int i = 0; i < words_array.length; i++)
+            {
+                WordInfo w = words_array[i];
+                String word = w.getWord();
 				// step 1 set member ship values for term in each document
 				double l = Membership.low(d.getWordFreq(word), w.getMinFreq(),
 						w.getAverage(), w.getMaxFreq());

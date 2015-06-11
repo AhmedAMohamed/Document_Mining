@@ -5,6 +5,7 @@ import java.util.*;
 public class Cluster{
 	
     private List<String> terms;
+    private HashSet<String> lookup;
     private double support;
 
     private Set<DocumentTermFrequency> docs;
@@ -16,22 +17,26 @@ public class Cluster{
     
     public Cluster(ArrayList<String> terms){
         this.terms = terms;
+        lookup = new HashSet<>(terms);
     }
 
     public Cluster(String str){
         terms = new ArrayList<>(1);
         terms.add(str);
+        lookup = new HashSet<>(terms);
     }
 
     public Cluster(String str, double support){
         terms = new ArrayList<>(1);
         terms.add(str);
         this.support = support;
+        lookup = new HashSet<>(terms);
     }
 
     public Cluster(ArrayList<String> terms, double support) {
     	this.terms = terms;
     	this.support = support;
+        lookup = new HashSet<>(terms);
     }
 
     /**
@@ -142,4 +147,27 @@ public class Cluster{
 			}
 		}
 	}
+
+    /**
+     * Checks whether a term exist.
+     *
+     * @param term the term to look for.
+     * @return boolean
+     */
+    public boolean hasTerm(String term)
+    {
+        return lookup.contains(term);
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for(String s : terms)
+        {
+            builder.append(s + ", ");
+        }
+        builder.delete(builder.length()-2, builder.length());
+        return "Cluster:  {id: "+ clusterMatricesIndex +" , terms:( " + builder + "), docSize: "+ docs.size() + " }";
+    }
 }

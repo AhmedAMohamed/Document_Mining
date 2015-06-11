@@ -94,8 +94,9 @@ public class Wordnet {
                 synset .getRelatedSynsets(Pointer.HYPERNYM) ;
         ArrayList<String> hypers = new ArrayList<>(Algorithm.HYPERNYM_LEVELS);
 
+        hypers.add(synset.getWord(1).getLemma().toString());
         // iterate to get the needed top level of hypernyms
-        while(!hypernyms.isEmpty() && hypers.size() < Algorithm.HYPERNYM_LEVELS)
+        while(!hypernyms.isEmpty() && hypers.size() < Algorithm.HYPERNYM_LEVELS-1)
         {
             ISynset s = dict.getSynset(hypernyms.get(0));
             hypers.add(s.getWords().get(0).getLemma());

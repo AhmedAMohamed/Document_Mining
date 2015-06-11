@@ -1,12 +1,10 @@
 package Utility;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Watch {
 
-    private static long _start, _lap;
+    private static long _start;
     private static ArrayList<Long> laps =  new ArrayList<>();
 
     public static void start(){

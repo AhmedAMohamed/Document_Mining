@@ -1,9 +1,6 @@
 package Main;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 import Jama.Matrix;
 import Models.Cluster;
@@ -54,7 +51,6 @@ public class Clustering {
             }
         }
         System.out.println(id + " zeros: " + count);
-        System.out.println();
     }
 	public static void constructTDM(HashMap<String, WordInfo> wordsVector) {
 
@@ -62,8 +58,15 @@ public class Clustering {
 
         for (WordInfo wi : wordsVector.values()) {
 			for (int j = 0; j < clusters.size(); j++) {
-				tdm[wi.getClusterMatricesIndex()][j] = clusters.get(j).getScore() /  wi
-                        .getMaxSummedFuzzyValue();
+                Cluster c = clusters.get(j);
+                if(!c.hasTerm(wi.getWord()))
+                {
+                    tdm[wi.getClusterMatricesIndex()][j] = 0;
+                }
+                else{
+
+                    tdm[wi.getClusterMatricesIndex()][j] = wi.getMaxSummedFuzzyValue() / c.getScore();
+                }
 			}
 		}
         countZeroRow(tdm, "tdm");
@@ -81,50 +84,78 @@ public class Clustering {
 
 		double[][] dcm = Clustering.dcm.getArray();
 
-        int i = 0;
-		for (DocumentTermFrequency d : documents) {
+		for (int i = 0; i < documents.size(); i++) {
 
-			double max = Double.NEGATIVE_INFINITY;
+            DocumentTermFrequency d = documents.get(i);
+			double max = 0;
 			Cluster maxCluster = null;
+
 			for (int j = 0; j < clusters.size(); j++) {
-				if (Double.compare(dcm[i][j], max) > 0) {
+                Cluster c = clusters.get(j);
+                if (dcm[i][j] > max) {
 					max = dcm[i][j];
-					if(maxCluster != null)
-						//maxCluster.getDocs().remove(d);
-					maxCluster = clusters.get(j);
-					
-				} else {
-					clusters.get(j).getDocs().remove(d);
+
+					if(maxCluster != null) {
+                        maxCluster.getDocs().remove(d);
+                    }
+
+					maxCluster = c;
+
 				}
-			}
-			i++;
+                else {
+                    c.getDocs().remove(d);
+				}
+
+            }
 		}
 	}
+    private static  int countDocumentsInClusters(){
+        //check documets
+        HashSet<DocumentTermFrequency> test = new HashSet<>();
+        for(Cluster c : clusters)
+        {
+            test.addAll(c.getDocs());
+        }
+        System.out.println("Documets found in clusters: " + test.size());
+        return test.size();
+    }
 
+
+    private class MergeElement{
+        double value;
+        int index;
+        double documentVis;
+
+        public MergeElement(double value, int index, double documentVis) {
+            this.value = value;
+            this.index = index;
+            this.documentVis = documentVis;
+        }
+    }
 	public static void mergeClusters() {
-		// merging step 1
-		System.out.println("number of clusters before: " + clusters.size());
-		Iterator<Cluster> itr = clusters.iterator();
-		while(itr.hasNext()) {
-			if(itr.next().getDocs().size() > 0) {
-				
-			}
-			else {
-				
-				itr.remove();
-			}
-		}
-		/*
-		 * // merging step 2 ArrayList<ArrayList<Double>> interSim = new
-		 * ArrayList<>();
-		 * 
-		 * for (int i = 0; i < interSim.size(); i++) { interSim.add(new
-		 * ArrayList<Double>()); for (int j = 0; j < interSim.get(i).size();
-		 * j++) { if (i == j) { interSim.get(i).add((double) 1); } else {
-		 * interSim.get(i).add( interSimilartyCalculatian(clusters.get(i),
-		 * clusters.get(j), dcm.getArray())); } } } double[] index_value =
-		 * getMaxVal(interSim);
-		 */
+        ArrayList<ArrayList<Iterator<MergeElement>>> iterators = new ArrayList<>(clusters.size());
+        for(int i = 0; i < clusters.size(); i++)
+        {
+            ArrayList<Iterator<MergeElement>> elements = new ArrayList<>(clusters.size());
+
+            for(int j = 0; j < clusters.size(); j++)
+            {
+                elements.set(i,null);
+            }
+
+            iterators.set(i, elements);
+        }
+
+        ArrayList<Iterator<MergeElement>> top = new ArrayList<>(clusters.size()-1);
+
+        LinkedList<LinkedList<MergeElement>> proximity = new LinkedList<>();
+
+        for(int i = 0; i < clusters.size()-1; i++)
+        {
+            
+        }
+
+
 	}
 
 	private double[] getMaxVal(ArrayList<ArrayList<Double>> interSim) {
@@ -187,14 +218,14 @@ public class Clustering {
 			HashMap<String, WordInfo> wordsVector,
 			ArrayList<Cluster> candidateCluster) {
 
-        System.out.println(documents.size());
-
 		Clustering.clusters = candidateCluster;
 		
 		for(Cluster c : clusters) {
         	c.updateClusterDocuments(wordsVector);
         	c.calculateScore(wordsVector);
         }
+
+        countDocumentsInClusters();
 
         //update cluster indexes
         for(int i = 0; i < clusters.size(); i++)
@@ -214,6 +245,7 @@ public class Clustering {
 		Clustering.constructTDM(wordsVector);
 		Clustering.calculateDCM();
 
+        countDocumentsInClusters();
 
 		Clustering.generateClusters(documents);
 		Clustering.mergeClusters();

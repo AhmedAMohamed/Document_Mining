@@ -151,9 +151,10 @@ public class Preprocess {
         IteratedLovinsStemmer ls = new IteratedLovinsStemmer();
         for (File file : files) {
             DocumentTermFrequency d = new DocumentTermFrequency(file.getName());
+            BufferedReader br = null;
             try {
                 // open the document
-                BufferedReader br = new BufferedReader(new InputStreamReader(
+                br = new BufferedReader(new InputStreamReader(
                         new FileInputStream(file)));
                 String line;
 
@@ -199,22 +200,22 @@ public class Preprocess {
                         // if global word doesnt exist create it
                         if(globalValue == null)
                         {
-                            globalValue = new WordInfo();
+                            globalValue = new WordInfo(word);
                             wordsVector.put(word, globalValue);
                         }
                         //add frequency
                         globalValue.incrementFrequency();
                         //add document
                         globalValue.addDocument(d);
-
-
                     }
                 }
                 documents.add(d);
+                br.close();
             } catch (IOException t) {
                 System.out.println("Couldn't read from file : "
                         + file.getAbsolutePath());
             }
+
         }
     }
 
@@ -231,7 +232,7 @@ public class Preprocess {
 
         //prune 1 on terms
         Watch.lapBegin();
-        tfidf(documents, wordsVector);
+        tfidf(documents, wordsVector, Algorithm.TFIDF_THRESHOLD);
         Watch.lapStop("1st tfidf");
         System.out.println("vector size:  " + wordsVector.size() + " words.");
 
@@ -252,7 +253,7 @@ public class Preprocess {
 
         //prune 2 on terms+hypernyms
         Watch.lapBegin();
-        tfidf(documents, wordsVector);
+        tfidf(documents, wordsVector, Algorithm.TFIDF_THRESHOLD2);
         Watch.lapStop("2nd tfidf");
         System.out.println("vector size:  " + wordsVector.size() + " words.");
     }
@@ -300,7 +301,7 @@ public class Preprocess {
                     // if global hyper doesnt exist create it
                     if(globalHyper == null)
                     {
-                        globalHyper = new WordInfo();
+                        globalHyper = new WordInfo(hypernym);
                         wordsVector.put(hypernym, globalHyper);
                     }
                     //add document to the hypernym
@@ -319,16 +320,16 @@ public class Preprocess {
      * {@link Main.Algorithm#TFIDF_THRESHOLD} and adjust the unified words vector as needed by decreementing freequency
      * when removing a word from a document and removing a word completly from the word vector when the word no longer
      * exists in any document.
-     *
-     * @param documents     document object that will get the result after preprocessing
+     *  @param documents     document object that will get the result after preprocessing
      * @param wordsVector   map of wards and its info that will get the unified words vector
+     * @param threshold
      */
-    private  static void tfidf(ArrayList<DocumentTermFrequency> documents,HashMap<String, WordInfo> wordsVector)
+    private  static void tfidf(ArrayList<DocumentTermFrequency> documents, HashMap<String, WordInfo> wordsVector,
+                               double threshold)
     {
         //loop over each document
         for(DocumentTermFrequency d : documents)
         {
-            double threshold = Algorithm.TFIDF_THRESHOLD;
 
             //loop over words vector
             Iterator<Map.Entry<String, WordInfo>> wordIterator = wordsVector.entrySet().iterator();

@@ -7,6 +7,7 @@ import java.util.*;
 public class WordInfo {
     private HashSet<DocumentTermFrequency> docs;
     private ArrayList<String> hypernyms;
+    private String word;
 
     private int freq;
     private int maxFreq, minFreq;
@@ -19,8 +20,10 @@ public class WordInfo {
 
     /**
      * Construct a wordinfo object. This object holds lots of information for a word in the data set.
+     *
+     * @param word  The word related to this worldInfo object.
      */
-    public WordInfo()
+    public WordInfo(String word)
     {
         docs = new HashSet<>();
         freq = 0;
@@ -29,7 +32,16 @@ public class WordInfo {
         maxFreq = Integer.MIN_VALUE;
         average = 0;
         maxSummedFuzzyVariable = FuzzyVariable.NONE;
+        this.word = word;
+    }
 
+    /**
+     * Get the word related to this wordInfo object.
+     *
+     * @return the word
+     */
+    public String getWord(){
+        return word;
     }
 
     /**

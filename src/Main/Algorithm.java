@@ -15,10 +15,11 @@ import java.util.HashMap;
 
 public class Algorithm {
 
-    public static double TFIDF_THRESHOLD = 0.8;
-    public static int HYPERNYM_LEVELS = 3;
-    public static double MIN_SUPPORT = 0.20;
-    public static double MIN_CONFIDENCE= 0.7;
+    public static double TFIDF_THRESHOLD = 0.65;
+    public static double TFIDF_THRESHOLD2 = 0.65;
+    public static int HYPERNYM_LEVELS = 5;
+    public static double MIN_SUPPORT = 0.2;
+    public static double MIN_CONFIDENCE= 0.8;
     public static double MIN_INTER_SIMILARITY = 0.5;
 
     public static  String DOCUMENT_DIRECTORY = "classic";
@@ -63,18 +64,17 @@ public class Algorithm {
         System.out.println("word vector size: " + wordsVector.size());
         System.out.println("Candidae clusters size: " + candidateCluster.size());
         ///////////////////////
+
         // Clustering
         System.out.println("\n\n---------------- Clustering ----------------\n");
         Watch.lapBegin();
         ArrayList<Cluster> clusters = Clustering.cluster(documents, wordsVector, candidateCluster);
+        System.out.println("Target clusters count: " + clusters.size());
         Watch.lapStop("clustering");
 
         Watch.stop("running the algorithm");
 
-        System.out.println(clusters.size());
-        for (Cluster c : clusters) {
-        	System.out.println(c.getDocs().size());
-        }
+
     }
 
 
