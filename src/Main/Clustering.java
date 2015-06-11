@@ -13,7 +13,7 @@ public class Clustering {
 
 	public static Matrix dtm;
 	public static Matrix tdm;
-	public static Matrix dcm;
+	public static double [][] dcm;
 
 	public static void calculateDTM(ArrayList<DocumentTermFrequency> documents,
 			HashMap<String, WordInfo> wordsVector) {
@@ -74,15 +74,14 @@ public class Clustering {
 	}
 
 	public static void calculateDCM() {
-		dcm = dtm.times(tdm);
+		Matrix _dcm = dtm.times(tdm);
+        dcm = _dcm.getArray();
 
 	}
 
 	public static void generateClusters(
 			ArrayList<DocumentTermFrequency> documents) {
 
-
-		double[][] dcm = Clustering.dcm.getArray();
 
 		for (int i = 0; i < documents.size(); i++) {
 
@@ -108,6 +107,8 @@ public class Clustering {
 
             }
 		}
+        dtm = null;
+        tdm = null;
 	}
     private static  int countDocumentsInClusters(){
         //check documets
@@ -121,43 +122,74 @@ public class Clustering {
     }
 
 
-    private class MergeElement{
-        double value;
-        int index;
-        double documentVis;
+    private static class Similarity {
+        int thisClusterIndex;
+        int otherClusterIndex;
+        double crossedV;
+        ListIterator<Double> proximityElementIterator = null;
 
-        public MergeElement(double value, int index, double documentVis) {
-            this.value = value;
-            this.index = index;
-            this.documentVis = documentVis;
+        public Similarity(int thisClusterIndex, int otherClusterIndex, double crossedV) {
+            this.thisClusterIndex = thisClusterIndex;
+            this.otherClusterIndex = otherClusterIndex;
+            this.crossedV = crossedV;
         }
     }
 	public static void mergeClusters() {
-        ArrayList<ArrayList<Iterator<MergeElement>>> iterators = new ArrayList<>(clusters.size());
+
+        //create pointers to proximity matrix iterators for fast delete
+        ArrayList<ArrayList<Similarity>> similarities = new ArrayList<>(clusters.size());
         for(int i = 0; i < clusters.size(); i++)
         {
-            ArrayList<Iterator<MergeElement>> elements = new ArrayList<>(clusters.size());
-
+            ArrayList<Similarity> elements = new ArrayList<>(clusters.size());
+            Set<DocumentTermFrequency> iDocuments = clusters.get(i).getDocs();
             for(int j = 0; j < clusters.size(); j++)
             {
-                elements.set(i,null);
+                //---- calculate crossed V of c{i} to c{j}
+                // walk on all documents in c{i} and multiply them by corresponding V in c{j}
+                double total = 0;
+                for(DocumentTermFrequency d : iDocuments)
+                {
+                    total += (dcm[i][d.getClusterMatricesIndex()] * dcm[j][d.getClusterMatricesIndex()]);
+                }
+                elements.set(j,new Similarity(i, j, total));
+
             }
 
-            iterators.set(i, elements);
+            similarities.set(i, elements);
         }
 
-        ArrayList<Iterator<MergeElement>> top = new ArrayList<>(clusters.size()-1);
+        ArrayList<ListIterator<LinkedList<Double>>> top = new ArrayList<>(clusters.size()-1);
 
-        LinkedList<LinkedList<MergeElement>> proximity = new LinkedList<>();
+        // create the proximity matrix which is a linkedlist of linked lists
+        /*
+        How it looks for 5 clusters?
+        0 -> 1,2,3,4
+        1 -> 2,3,4
+        2 -> 3,4
+        3 -> 4
+         */
+        LinkedList<LinkedList<Double>> proximity = new LinkedList<>();
 
         for(int i = 0; i < clusters.size()-1; i++)
         {
-            
+            // holds intersimilarity between cluster i and j where j (i,clusters.size()]
+            LinkedList<Double> elements = new LinkedList<>();
+
+            for(int j = i+1; j < clusters.size(); j++)
+            {
+                elements.add(interSimilarity(i,j));
+            }
+
+
         }
 
 
 	}
 
+    private static double interSimilarity( int thisClusterIndex, int otherClusterIndex)
+    {
+            return 0;
+    }
 	private double[] getMaxVal(ArrayList<ArrayList<Double>> interSim) {
 		double max = Double.MIN_VALUE;
 		int maxIindex = 0;

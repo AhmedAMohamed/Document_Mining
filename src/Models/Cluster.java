@@ -12,6 +12,8 @@ public class Cluster{
 
     private int clusterMatricesIndex = 0;
 
+    private double summationVsquared = 0;
+
     private double score = 0;
     
     
@@ -159,6 +161,14 @@ public class Cluster{
         return lookup.contains(term);
     }
 
+
+    public double getSummationVsquared(){
+        return summationVsquared;
+    }
+
+    public void addToSummationVSquared(double value){
+        summationVsquared += value;
+    }
 
     @Override
     public String toString() {
